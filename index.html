@@ -1,42 +1,57 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Dótir SAAC</title>
-  
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link rel="apple-touch-icon" href="icon-192.png">
-  <link rel="manifest" href="manifest.json">
-  
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Dótir SAAC - Comunicador</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Dótir SAAC">
+    <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+    <link rel="manifest" href="manifest.json">
+
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div id="app">
-    <header id="phrase-bar">
-      <div id="current-phrase"></div>
-      <button id="clear-btn">✖</button>
-    </header>
 
-    <main id="pictogram-grid">
-      </main>
+    <div id="app-container">
+        
+        <section id="phrase-section">
+            <div id="current-phrase" class="phrase-display">
+                <p class="placeholder-text">Toca un pictograma para empezar...</p>
+            </div>
+            
+            <div class="phrase-controls">
+                <button id="clear-btn" aria-label="Borrar frase">✖</button>
+            </div>
+        </section>
 
-    <nav id="module-nav">
-      <button class="nav-item active">SAAC</button>
-      <button class="nav-item" disabled>Juegos</button>
-      <select id="lang-selector">
-        <option value="es">Español</option>
-        <option value="en">English</option>
-      </select>
-    </nav>
-  </div>
+        <main id="pictogram-grid">
+            </main>
 
-  <script src="app.js"></script>
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js');
-    }
-  </script>
+        <nav id="main-nav">
+            <div class="nav-modules">
+                <button class="nav-btn active" id="btn-saac">
+                    <span class="icon">💬</span>
+                    <span class="label">Comunicador</span>
+                </button>
+                <button class="nav-btn" id="btn-juegos" disabled title="Próximamente">
+                    <span class="icon">🧩</span>
+                    <span class="label">Actividades</span>
+                </button>
+            </div>
+
+            <div class="nav-settings">
+                <select id="lang-selector" aria-label="Cambiar idioma">
+                    <option value="es" selected>Español</option>
+                    <option value="en">English</option>
+                </select>
+            </div>
+        </nav>
+
+    </div>
+
+    <script src="app.js"></script>
 </body>
 </html>

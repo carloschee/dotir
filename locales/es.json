@@ -1,0 +1,26 @@
+{
+  "ui": {
+    "title": "Dótir SAAC",
+    "clear_phrase": "Borrar",
+    "play_phrase": "Decir",
+    "categories_label": "Categorías"
+  },
+  "categories": {
+    "actions": { "name": "Acciones", "color": "#FFD700" },
+    "emotions": { "name": "Emociones", "color": "#FFB6C1" },
+    "basic_needs": { "name": "Necesidades", "color": "#98FB98" },
+    "social": { "name": "Social", "color": "#ADD8E6" },
+    "medical": { "name": "Salud", "color": "#F08080" }
+  },
+  "vocabulary": [
+    { "id": "v1", "cat": "actions", "label": "Quiero", "icon": "quiero.png" },
+    { "id": "v2", "cat": "actions", "label": "Ver", "icon": "ver.png" },
+    { "id": "v3", "cat": "basic_needs", "label": "Agua", "icon": "agua.png" },
+    { "id": "v4", "cat": "basic_needs", "label": "Baño", "icon": "banio.png" },
+    { "id": "v5", "cat": "emotions", "label": "Feliz", "icon": "feliz.png" },
+    { "id": "v6", "cat": "emotions", "label": "Enojado", "icon": "enojado.png" },
+    { "id": "v7", "cat": "medical", "label": "Me duele", "icon": "dolor.png" },
+    { "id": "v8", "cat": "social", "label": "Hola", "icon": "hola.png" },
+    { "id": "v9", "cat": "social", "label": "Por favor", "icon": "porfavor.png" }
+  ]
+}
