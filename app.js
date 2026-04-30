@@ -13,27 +13,31 @@ function getCategory(name) {
 }
 
 const vocabulary = rawFiles.map(file => ({
-    id: file,
-    label: file.toUpperCase(),
-    img: `assets/pics/${file}.png`,
-    voice: file,
-    cat: getCategory(file)
+    id: file, label: file.toUpperCase(), img: `assets/pics/${file}.png`, voice: file, cat: getCategory(file)
 }));
 
 let currentPhrase = [];
 let activeFilter = 'all';
 
 function navigateTo(view) {
-    document.getElementById('view-menu').classList.toggle('hidden', view !== 'menu');
-    document.getElementById('view-module').classList.toggle('hidden', view !== 'saac');
+    const views = ['view-menu', 'view-module', 'view-settings'];
+    views.forEach(v => document.getElementById(v).classList.add('hidden'));
+    document.getElementById(`view-${view}`).classList.remove('hidden');
     if (view === 'saac') renderSAAC();
+}
+
+function accessSettings() {
+    const n1 = Math.floor(Math.random() * 10) + 1;
+    const n2 = Math.floor(Math.random() * 10) + 1;
+    const answer = prompt(`RETO DE SEGURIDAD:\n¿Cuánto es ${n1} + ${n2}?`);
+    if (parseInt(answer) === (n1 + n2)) navigateTo('settings');
 }
 
 function filterCategory(cat) {
     activeFilter = cat;
-    // Actualizar UI de botones
     document.querySelectorAll('.cat-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.innerText.toLowerCase() === cat || (cat === 'all' && btn.innerText === 'TODOS'));
+        const btnText = btn.innerText.toLowerCase();
+        btn.classList.toggle('active', btnText === cat || (cat === 'all' && btnText === 'todos'));
     });
     renderSAAC();
 }
@@ -41,21 +45,12 @@ function filterCategory(cat) {
 function renderSAAC() {
     const grid = document.getElementById('pictogram-grid');
     grid.innerHTML = '';
-    
     const filtered = activeFilter === 'all' ? vocabulary : vocabulary.filter(v => v.cat === activeFilter);
-
     filtered.forEach(item => {
         const card = document.createElement('div');
         card.className = `picto-card cat-${item.cat}`;
-        card.innerHTML = `
-            <img src="${item.img}" onerror="this.src='https://via.placeholder.com/100?text=${item.label}'">
-            <span class="picto-label">${item.label}</span>
-        `;
-        card.onclick = () => {
-            currentPhrase.push(item);
-            updatePhraseDisplay();
-            speak(item.voice);
-        };
+        card.innerHTML = `<img src="${item.img}" onerror="this.src='https://via.placeholder.com/100?text=${item.label}'"><span class="picto-label">${item.label}</span>`;
+        card.onclick = () => { currentPhrase.push(item); updatePhraseDisplay(); speak(item.voice); };
         grid.appendChild(card);
     });
 }
@@ -80,6 +75,28 @@ function speak(text) {
 
 function speakPhrase() {
     if (currentPhrase.length > 0) speak(currentPhrase.map(i => i.voice).join(' '));
+}
+
+async function downloadAllAssets() {
+    const status = document.getElementById('status-msg');
+    const fill = document.getElementById('progress-fill');
+    document.getElementById('download-progress').classList.remove('hidden');
+    const urls = ['index.html', 'styles.css', 'app.js', ...vocabulary.map(v => v.img)];
+    const cache = await caches.open('dotir-v1');
+    for (let i = 0; i < urls.length; i++) {
+        await cache.add(urls[i]).catch(e => console.log("Error en:", urls[i]));
+        fill.style.width = `${Math.round(((i + 1) / urls.length) * 100)}%`;
+        status.innerText = `Descargando: ${i + 1} de ${urls.length}`;
+    }
+    status.innerText = "✅ App lista para usar sin conexión.";
+}
+
+async function clearAppData() {
+    if (confirm("¿Borrar caché y actualizar desde el servidor?")) {
+        const keys = await caches.keys();
+        await Promise.all(keys.map(key => caches.delete(key)));
+        window.location.reload(true);
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {

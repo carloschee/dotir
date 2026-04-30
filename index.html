@@ -10,6 +10,7 @@
 </head>
 <body>
     <div id="app-container">
+        
         <section id="view-menu" class="view">
             <header class="menu-header">
                 <h1>Dótir</h1>
@@ -23,6 +24,15 @@
                         <span class="desc">Entrar al tablero</span>
                     </div>
                 </article>
+                
+                <article class="menu-item" onclick="accessSettings()">
+                    <div class="menu-icon">⚙️</div>
+                    <div class="menu-info">
+                        <span class="title">Configuración</span>
+                        <span class="desc">Opciones y Offline</span>
+                    </div>
+                </article>
+
                 <article class="menu-item disabled">
                     <div class="menu-icon">🧩</div>
                     <div class="menu-info">
@@ -61,6 +71,32 @@
                 <main id="pictogram-grid"></main>
             </div>
         </section>
+
+        <section id="view-settings" class="view hidden">
+            <nav class="module-nav-bar">
+                <button class="back-btn" onclick="navigateTo('menu')">⬅ Volver</button>
+                <div id="module-title">Ajustes</div>
+                <div class="nav-spacer"></div>
+            </nav>
+            <div class="settings-content">
+                <div class="settings-card">
+                    <h3>Almacenamiento Offline</h3>
+                    <p>Descarga las imágenes para usar la app sin internet.</p>
+                    <button class="settings-btn" onclick="downloadAllAssets()">⬇ Descargar todo</button>
+                    <div id="download-progress" class="progress-bar hidden">
+                        <div id="progress-fill"></div>
+                    </div>
+                    <p id="status-msg"></p>
+                </div>
+
+                <div class="settings-card danger">
+                    <h3>Mantenimiento</h3>
+                    <p>Borra el caché local y fuerza la actualización desde el servidor.</p>
+                    <button class="settings-btn danger" onclick="clearAppData()">🗑 Limpiar y Refrescar</button>
+                </div>
+            </div>
+        </section>
+
     </div>
     <script src="app.js"></script>
 </body>
