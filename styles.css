@@ -1,102 +1,85 @@
 :root {
   --bg-app: #f0f4f7;
-  --radius-lg: 24px;
+  --radius: 18px;
   --cat-subject: #ffeb3b; --cat-action: #c5e1a5; --cat-noun: #90caf9;
-  --cat-medical: #ef9a9a; --cat-social: #ffccbc;
-  /* Alturas fijas para asegurar espacio */
-  --nav-height: 60px;
-  --phrase-height: 100px;
+  --cat-medical: #ef9a9a; --cat-social: #ffccbc; --cat-place: #d1d8e0;
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-/* Evitamos que el scroll se pierda en el infinito */
-html, body {
-  margin: 0; padding: 0;
-  width: 100%; height: 100%;
-  position: fixed; /* Bloquea el rebote elástico de Safari */
-  overflow: hidden;
-  font-family: system-ui, -apple-system, sans-serif;
-  background-color: var(--bg-app);
+html, body { 
+    margin: 0; padding: 0; width: 100%; height: 100%; 
+    overflow: hidden; background: var(--bg-app);
+    font-family: system-ui, sans-serif;
 }
 
 #app-container {
-  width: 100%; height: 100%;
-  display: flex;
-  flex-direction: column;
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
+    height: 100%; display: flex; flex-direction: column;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
 }
 
-.view { width: 100%; height: 100%; display: flex; flex-direction: column; }
+.view { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
 .hidden { display: none !important; }
 
-/* --- NAVEGACIÓN Y FRASE (ESTÁTICOS) --- */
-.module-nav-bar {
-  height: var(--nav-height);
-  background: white; padding: 0 15px;
-  display: flex; align-items: center; justify-content: space-between;
-  border-bottom: 1px solid #ddd;
-  flex-shrink: 0;
+.menu-header { padding: 30px 20px; text-align: center; }
+.menu-grid { padding: 0 20px; }
+.menu-item { 
+    background: white; padding: 20px; border-radius: var(--radius); 
+    display: flex; align-items: center; gap: 15px; margin-bottom: 15px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
 }
+
+.module-nav-bar { 
+    height: 60px; background: white; display: flex; 
+    align-items: center; justify-content: space-between; padding: 0 15px;
+    border-bottom: 1px solid #ddd;
+}
+
+#saac-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
 
 #phrase-section {
-  height: var(--phrase-height);
-  background: white; margin: 10px;
-  border-radius: 18px; display: flex; align-items: center;
-  padding: 0 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  flex-shrink: 0;
+    height: 90px; background: white; margin: 10px; border-radius: var(--radius);
+    display: flex; align-items: center; padding: 0 10px; flex-shrink: 0;
 }
 
-/* --- EL CONTENEDOR MÁGICO DE SCROLL --- */
+.phrase-display { flex: 1; display: flex; gap: 5px; overflow-x: auto; height: 100%; align-items: center; }
+.phrase-display img { height: 60px; width: 60px; object-fit: contain; }
+
+.phrase-controls { display: flex; gap: 8px; }
+#clear-btn, #speak-btn { width: 45px; height: 45px; border-radius: 50%; border: none; color: white; font-size: 20px; }
+#clear-btn { background: #ff7675; }
+#speak-btn { background: #55efc4; }
+
 #pictogram-grid {
-  flex: 1; /* Ocupa todo lo que sobra */
-  overflow-y: scroll !important; /* Forzamos scrollbar */
-  -webkit-overflow-scrolling: touch; /* Momentum scroll para iOS */
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-  gap: 12px;
-  padding: 15px;
-  /* IMPORTANTE: Esto asegura que el contenido sea mayor al contenedor */
-  padding-bottom: 100px; 
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 12px;
+    padding: 15px;
+    background: var(--bg-app);
 }
 
-/* Ajuste para iPad Air (Horizontal) */
 @media (min-width: 768px) {
-  #pictogram-grid {
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 20px;
-  }
-  --phrase-height: 150px;
+    #pictogram-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 20px; }
+    #phrase-section { height: 140px; }
+    .phrase-display img { height: 100px; width: 100px; }
 }
 
-/* --- TARJETAS --- */
 .picto-card {
-  background: white; border-radius: 18px;
-  padding: 10px; text-align: center;
-  border-bottom: 4px solid rgba(0,0,0,0.1);
-  display: flex; flex-direction: column; align-items: center;
+    background: white; border-radius: var(--radius); padding: 10px;
+    display: flex; flex-direction: column; align-items: center;
+    border-bottom: 4px solid rgba(0,0,0,0.1);
 }
 
-.picto-card img { width: 100%; max-width: 80px; aspect-ratio: 1/1; }
-.picto-label { margin-top: 5px; font-weight: bold; font-size: 0.8rem; text-transform: uppercase; }
+.picto-card img { width: 100%; aspect-ratio: 1/1; object-fit: contain; }
+.picto-label { margin-top: 8px; font-weight: bold; font-size: 0.8rem; text-transform: uppercase; text-align: center; }
 
-/* Colores Fitzgerald */
 .cat-subject { background-color: var(--cat-subject); }
 .cat-action { background-color: var(--cat-action); }
 .cat-noun { background-color: var(--cat-noun); }
 .cat-medical { background-color: var(--cat-medical); }
 .cat-social { background-color: var(--cat-social); }
-
-/* Estilos Menú Principal */
-.menu-header { padding: 20px; text-align: center; }
-.menu-grid { padding: 20px; overflow-y: auto; }
-.menu-item {
-  background: white; padding: 20px; border-radius: 20px;
-  margin-bottom: 15px; display: flex; align-items: center; gap: 15px;
-}
-.phrase-display { flex: 1; display: flex; gap: 5px; overflow-x: auto; }
-.phrase-display img { height: 60px; }
-#clear-btn, #speak-btn { width: 45px; height: 45px; border-radius: 50%; border: none; color: white; }
-#clear-btn { background: #ff7675; }
-#speak-btn { background: #55efc4; margin-right: 5px; }
+.cat-place { background-color: var(--cat-place); }

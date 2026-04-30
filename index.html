@@ -6,29 +6,23 @@
     <title>Dótir SAAC</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
-    <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
-    <div id="app-container" class="viewport-ios">
-        
+    <div id="app-container">
         <section id="view-menu" class="view">
             <header class="menu-header">
                 <h1>Dótir</h1>
                 <p>¿Qué vamos a hacer hoy?</p>
             </header>
-            
-            <div class="menu-grid scrollable">
+            <div class="menu-grid">
                 <article class="menu-item" onclick="navigateTo('saac')">
                     <div class="menu-icon">💬</div>
                     <div class="menu-info">
                         <span class="title">Comunicador</span>
-                        <span class="desc">Módulo SAAC</span>
+                        <span class="desc">Entrar al tablero</span>
                     </div>
                 </article>
-
                 <article class="menu-item disabled">
                     <div class="menu-icon">🧩</div>
                     <div class="menu-info">
@@ -42,7 +36,7 @@
         <section id="view-module" class="view hidden">
             <nav class="module-nav-bar">
                 <button class="back-btn" onclick="navigateTo('menu')">⬅ Menú</button>
-                <div id="module-title">Comunicador</div>
+                <div id="module-title">SAAC</div>
                 <div class="nav-spacer"></div>
             </nav>
 
@@ -54,14 +48,10 @@
                         <button id="clear-btn">✖</button>
                     </div>
                 </header>
-
-                <main id="pictogram-grid" class="scrollable">
-                    </main>
+                <main id="pictogram-grid"></main>
             </div>
         </section>
-
     </div>
-
     <script src="app.js"></script>
 </body>
 </html>
