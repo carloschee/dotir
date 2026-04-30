@@ -13,7 +13,11 @@ function getCategory(name) {
 }
 
 const vocabulary = rawFiles.map(file => ({
-    id: file, label: file.toUpperCase(), img: `assets/pics/${file}.png`, voice: file, cat: getCategory(file)
+    id: file, 
+    label: file.toUpperCase(), 
+    img: `assets/pics/${file}.png`, 
+    voice: file, 
+    cat: getCategory(file)
 }));
 
 let currentPhrase = [];
@@ -21,8 +25,12 @@ let activeFilter = 'all';
 
 function navigateTo(view) {
     const views = ['view-menu', 'view-module', 'view-settings'];
-    views.forEach(v => document.getElementById(v).classList.add('hidden'));
-    document.getElementById(`view-${view}`).classList.remove('hidden');
+    views.forEach(v => {
+        const el = document.getElementById(v);
+        if (el) el.classList.add('hidden');
+    });
+    const target = document.getElementById(`view-${view}`);
+    if (target) target.classList.remove('hidden');
     if (view === 'saac') renderSAAC();
 }
 
@@ -44,24 +52,39 @@ function filterCategory(cat) {
 
 function renderSAAC() {
     const grid = document.getElementById('pictogram-grid');
+    if (!grid) return;
     grid.innerHTML = '';
     const filtered = activeFilter === 'all' ? vocabulary : vocabulary.filter(v => v.cat === activeFilter);
+    
     filtered.forEach(item => {
         const card = document.createElement('div');
         card.className = `picto-card cat-${item.cat}`;
-        card.innerHTML = `<img src="${item.img}" onerror="this.src='https://via.placeholder.com/100?text=${item.label}'"><span class="picto-label">${item.label}</span>`;
-        card.onclick = () => { currentPhrase.push(item); updatePhraseDisplay(); speak(item.voice); };
+        card.innerHTML = `
+            <img src="${item.img}" alt="${item.label}" onerror="this.onerror=null; this.src='https://via.placeholder.com/100/ffffff/000000?text=${item.label}'">
+            <span class="picto-label">${item.label}</span>
+        `;
+        card.onclick = () => {
+            currentPhrase.push(item);
+            updatePhraseDisplay();
+            speak(item.voice);
+        };
         grid.appendChild(card);
     });
 }
 
 function updatePhraseDisplay() {
     const display = document.getElementById('current-phrase');
+    if (!display) return;
     display.innerHTML = '';
     currentPhrase.forEach((item, index) => {
         const img = document.createElement('img');
         img.src = item.img;
-        img.onclick = () => { currentPhrase.splice(index, 1); updatePhraseDisplay(); };
+        img.onerror = (e) => { e.target.src = `https://via.placeholder.com/50?text=${item.label}`; };
+        img.onclick = (e) => {
+            e.stopPropagation();
+            currentPhrase.splice(index, 1);
+            updatePhraseDisplay();
+        };
         display.appendChild(img);
     });
 }
@@ -77,28 +100,43 @@ function speakPhrase() {
     if (currentPhrase.length > 0) speak(currentPhrase.map(i => i.voice).join(' '));
 }
 
+// Inicialización de botones
+document.addEventListener('DOMContentLoaded', () => {
+    const clearBtn = document.getElementById('clear-btn');
+    if (clearBtn) {
+        clearBtn.onclick = (e) => {
+            e.stopPropagation();
+            currentPhrase = [];
+            updatePhraseDisplay();
+        };
+    }
+});
+
+// Configuración Offline
 async function downloadAllAssets() {
     const status = document.getElementById('status-msg');
     const fill = document.getElementById('progress-fill');
-    document.getElementById('download-progress').classList.remove('hidden');
+    const bar = document.getElementById('download-progress');
+    if (bar) bar.classList.remove('hidden');
+    
     const urls = ['index.html', 'styles.css', 'app.js', ...vocabulary.map(v => v.img)];
-    const cache = await caches.open('dotir-v1');
-    for (let i = 0; i < urls.length; i++) {
-        await cache.add(urls[i]).catch(e => console.log("Error en:", urls[i]));
-        fill.style.width = `${Math.round(((i + 1) / urls.length) * 100)}%`;
-        status.innerText = `Descargando: ${i + 1} de ${urls.length}`;
+    try {
+        const cache = await caches.open('dotir-v1');
+        for (let i = 0; i < urls.length; i++) {
+            await cache.add(urls[i]).catch(() => console.warn("No se pudo cachear:", urls[i]));
+            if (fill) fill.style.width = `${Math.round(((i + 1) / urls.length) * 100)}%`;
+            if (status) status.innerText = `Descargando: ${i + 1} de ${urls.length}`;
+        }
+        if (status) status.innerText = "✅ App lista para usar sin conexión.";
+    } catch (e) {
+        if (status) status.innerText = "❌ Error al descargar.";
     }
-    status.innerText = "✅ App lista para usar sin conexión.";
 }
 
 async function clearAppData() {
-    if (confirm("¿Borrar caché y actualizar desde el servidor?")) {
+    if (confirm("¿Borrar caché y actualizar?")) {
         const keys = await caches.keys();
         await Promise.all(keys.map(key => caches.delete(key)));
         window.location.reload(true);
     }
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('clear-btn').onclick = () => { currentPhrase = []; updatePhraseDisplay(); };
-});
