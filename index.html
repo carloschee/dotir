@@ -17,77 +17,67 @@
                 <p>¿Qué vamos a hacer hoy?</p>
             </header>
             <div class="menu-grid">
-                <article class="menu-item" onclick="navigateTo('saac')">
+                <div class="menu-item" onclick="navigateTo('saac')">
                     <div class="menu-icon">💬</div>
                     <div class="menu-info">
                         <span class="title">Comunicador</span>
                         <span class="desc">Entrar al tablero</span>
                     </div>
-                </article>
-                
-                <article class="menu-item" onclick="accessSettings()">
+                </div>
+                <div class="menu-item" onclick="accessSettings()">
                     <div class="menu-icon">⚙️</div>
                     <div class="menu-info">
                         <span class="title">Configuración</span>
                         <span class="desc">Opciones y Offline</span>
                     </div>
-                </article>
+                </div>
             </div>
         </section>
 
-        <section id="view-module" class="view hidden">
+        <section id="view-saac" class="view hidden">
             <nav class="module-nav-bar">
-                <button class="back-btn" onclick="navigateTo('menu')">⬅ Menú</button>
-                <div id="module-title">SAAC</div>
-                <div class="nav-spacer"></div>
+                <button onclick="navigateTo('menu')">⬅ Menú</button>
+                <div id="module-title">COMUNICADOR</div>
+                <div style="width:50px"></div>
             </nav>
 
-            <div id="saac-content">
-                <header id="phrase-section">
-                    <div id="current-phrase" class="phrase-display"></div>
-                    <div class="phrase-controls">
-                        <button id="speak-btn" onclick="speakPhrase()">🔊</button>
-                        <button id="clear-btn">✖</button>
-                    </div>
-                </header>
+            <header id="phrase-section">
+                <div id="current-phrase" class="phrase-display"></div>
+                <div class="phrase-controls">
+                    <button id="speak-btn" onclick="speakPhrase()">🔊</button>
+                    <button id="clear-btn" onclick="clearPhrase()">✖</button>
+                </div>
+            </header>
 
-                <nav id="category-bar">
-                    <button class="cat-btn active" onclick="filterCategory('all')">TODOS</button>
-                    <button class="cat-btn" onclick="filterCategory('social')">SOCIAL</button>
-                    <button class="cat-btn" onclick="filterCategory('medical')">SALUD</button>
-                    <button class="cat-btn" onclick="filterCategory('action')">ACCIONES</button>
-                    <button class="cat-btn" onclick="filterCategory('noun')">OBJETOS</button>
-                    <button class="cat-btn" onclick="filterCategory('place')">LUGARES</button>
-                </nav>
+            <nav id="category-bar">
+                <button class="cat-btn active" onclick="filterCategory('all')">TODOS</button>
+                <button class="cat-btn" onclick="filterCategory('social')">SOCIAL</button>
+                <button class="cat-btn" onclick="filterCategory('medical')">SALUD</button>
+                <button class="cat-btn" onclick="filterCategory('action')">ACCIONES</button>
+                <button class="cat-btn" onclick="filterCategory('noun')">OBJETOS</button>
+                <button class="cat-btn" onclick="filterCategory('place')">LUGARES</button>
+            </nav>
 
-                <main id="pictogram-grid"></main>
-            </div>
+            <main id="pictogram-grid"></main>
         </section>
 
         <section id="view-settings" class="view hidden">
             <nav class="module-nav-bar">
-                <button class="back-btn" onclick="navigateTo('menu')">⬅ Volver</button>
-                <div id="module-title">Ajustes</div>
-                <div class="nav-spacer"></div>
+                <button onclick="navigateTo('menu')">⬅ Volver</button>
+                <div>AJUSTES</div>
+                <div style="width:50px"></div>
             </nav>
             <div class="settings-content">
                 <div class="settings-card">
-                    <h3>Almacenamiento Offline</h3>
-                    <p>Descarga las imágenes para usar la app sin internet.</p>
-                    <button class="settings-btn" onclick="downloadAllAssets()">⬇ Descargar todo</button>
-                    <div id="download-progress" class="progress-bar hidden">
-                        <div id="progress-fill"></div>
-                    </div>
+                    <h3>Modo Offline</h3>
+                    <button class="settings-btn" onclick="downloadAllAssets()">Descargar Imágenes</button>
                     <p id="status-msg"></p>
                 </div>
-
-                <div class="settings-card danger">
-                    <h3>Mantenimiento</h3>
-                    <button class="settings-btn danger" onclick="clearAppData()">🗑 Limpiar y Refrescar</button>
+                <div class="settings-card">
+                    <button class="settings-btn danger" onclick="clearAppData()">Limpiar Caché</button>
                 </div>
             </div>
         </section>
-
     </div>
     <script src="app.js"></script>
 </body>
