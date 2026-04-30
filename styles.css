@@ -1,102 +1,76 @@
 :root {
   --bg-app: #f0f4f7;
-  --bg-card: #ffffff;
   --radius-lg: 24px;
   --cat-subject: #ffeb3b; --cat-action: #c5e1a5; --cat-noun: #90caf9;
   --cat-medical: #ef9a9a; --cat-social: #ffccbc;
+  /* Alturas fijas para asegurar espacio */
+  --nav-height: 60px;
+  --phrase-height: 100px;
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-body, html {
-  margin: 0; padding: 0; 
-  height: 100%; width: 100%;
+/* Evitamos que el scroll se pierda en el infinito */
+html, body {
+  margin: 0; padding: 0;
+  width: 100%; height: 100%;
+  position: fixed; /* Bloquea el rebote elástico de Safari */
+  overflow: hidden;
   font-family: system-ui, -apple-system, sans-serif;
   background-color: var(--bg-app);
-  overflow: hidden; /* Prohibido el scroll en la página raíz */
 }
 
-/* Contenedor principal ajustado para Safe Areas */
 #app-container {
+  width: 100%; height: 100%;
   display: flex;
   flex-direction: column;
-  height: 100dvh; /* dvh = dynamic viewport height para iOS */
   padding-top: env(safe-area-inset-top);
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-.view { 
-  display: flex; 
-  flex-direction: column; 
-  flex: 1; /* Ocupa todo el espacio */
-  overflow: hidden; 
-}
-
+.view { width: 100%; height: 100%; display: flex; flex-direction: column; }
 .hidden { display: none !important; }
 
-/* CLAVE: Contenedor con scroll habilitado */
-.scrollable {
-  flex: 1;
-  overflow-y: auto !important;
-  -webkit-overflow-scrolling: touch; /* Habilita el "rebote" suave en iOS */
-  min-height: 0; /* Parche para que flexbox respete el scroll */
-}
-
-/* --- Estilos Menú --- */
-.menu-header { padding: 15px; text-align: center; flex-shrink: 0; }
-.menu-grid { padding: 15px; }
-
-.menu-item {
-  background: white; border-radius: var(--radius-lg);
-  padding: 20px; display: flex; align-items: center; gap: 15px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 15px;
-}
-
-/* --- Módulo SAAC --- */
+/* --- NAVEGACIÓN Y FRASE (ESTÁTICOS) --- */
 .module-nav-bar {
-  background: white; padding: 10px 15px;
+  height: var(--nav-height);
+  background: white; padding: 0 15px;
   display: flex; align-items: center; justify-content: space-between;
   border-bottom: 1px solid #ddd;
   flex-shrink: 0;
 }
 
-#saac-content {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  overflow: hidden;
-}
-
 #phrase-section {
-  flex-shrink: 0;
-  height: 80px; background: white; margin: 10px;
-  border-radius: 15px; display: flex; align-items: center;
+  height: var(--phrase-height);
+  background: white; margin: 10px;
+  border-radius: 18px; display: flex; align-items: center;
   padding: 0 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  flex-shrink: 0;
 }
 
-.phrase-display { flex: 1; display: flex; gap: 5px; overflow-x: auto; align-items: center; }
-.phrase-display img { height: 45px; width: 45px; object-fit: contain; }
-
-#clear-btn, #speak-btn {
-  width: 40px; height: 40px; border-radius: 50%; border: none; color: white;
-}
-#clear-btn { background: #ff7675; }
-#speak-btn { background: #55efc4; margin-right: 5px; }
-
-/* Grid de Pictogramas */
+/* --- EL CONTENEDOR MÁGICO DE SCROLL --- */
 #pictogram-grid {
+  flex: 1; /* Ocupa todo lo que sobra */
+  overflow-y: scroll !important; /* Forzamos scrollbar */
+  -webkit-overflow-scrolling: touch; /* Momentum scroll para iOS */
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(95px, 1fr)); 
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
   gap: 12px;
   padding: 15px;
+  /* IMPORTANTE: Esto asegura que el contenido sea mayor al contenedor */
+  padding-bottom: 100px; 
 }
 
-@media (min-width: 768px) { 
-  #pictogram-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
-  #phrase-section { height: 130px; }
-  .phrase-display img { height: 90px; width: 90px; }
+/* Ajuste para iPad Air (Horizontal) */
+@media (min-width: 768px) {
+  #pictogram-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 20px;
+  }
+  --phrase-height: 150px;
 }
 
+/* --- TARJETAS --- */
 .picto-card {
   background: white; border-radius: 18px;
   padding: 10px; text-align: center;
@@ -104,8 +78,8 @@ body, html {
   display: flex; flex-direction: column; align-items: center;
 }
 
-.picto-card img { width: 100%; max-width: 75px; height: auto; aspect-ratio: 1/1; }
-.picto-label { margin-top: 5px; font-weight: bold; font-size: 0.75rem; text-transform: uppercase; }
+.picto-card img { width: 100%; max-width: 80px; aspect-ratio: 1/1; }
+.picto-label { margin-top: 5px; font-weight: bold; font-size: 0.8rem; text-transform: uppercase; }
 
 /* Colores Fitzgerald */
 .cat-subject { background-color: var(--cat-subject); }
@@ -113,3 +87,16 @@ body, html {
 .cat-noun { background-color: var(--cat-noun); }
 .cat-medical { background-color: var(--cat-medical); }
 .cat-social { background-color: var(--cat-social); }
+
+/* Estilos Menú Principal */
+.menu-header { padding: 20px; text-align: center; }
+.menu-grid { padding: 20px; overflow-y: auto; }
+.menu-item {
+  background: white; padding: 20px; border-radius: 20px;
+  margin-bottom: 15px; display: flex; align-items: center; gap: 15px;
+}
+.phrase-display { flex: 1; display: flex; gap: 5px; overflow-x: auto; }
+.phrase-display img { height: 60px; }
+#clear-btn, #speak-btn { width: 45px; height: 45px; border-radius: 50%; border: none; color: white; }
+#clear-btn { background: #ff7675; }
+#speak-btn { background: #55efc4; margin-right: 5px; }

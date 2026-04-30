@@ -2,18 +2,18 @@ const vocabulary = [
     { id: 'yo', cat: 'subject', label: 'Yo', img: 'yo.png', voice: 'Yo' },
     { id: 'quiero', cat: 'action', label: 'Quiero', img: 'quiero.png', voice: 'quiero' },
     { id: 'comer', cat: 'action', label: 'Comer', img: 'comer.png', voice: 'comer' },
-    { id: 'beber', cat: 'action', label: 'Beber', img: 'beber.png', voice: 'beber' },
-    { id: 'banio', cat: 'noun', label: 'Baño', img: 'banio.png', voice: 'ir al baño' },
+    { id: 'beber', cat: 'action', label: 'Beber', img: 'beber' },
     { id: 'agua', cat: 'noun', label: 'Agua', img: 'agua.png', voice: 'agua' },
+    { id: 'banio', cat: 'noun', label: 'Baño', img: 'banio.png', voice: 'ir al baño' },
     { id: 'jugar', cat: 'action', label: 'Jugar', img: 'jugar.png', voice: 'jugar' },
     { id: 'pelota', cat: 'noun', label: 'Pelota', img: 'pelota.png', voice: 'la pelota' },
     { id: 'duele', cat: 'medical', label: 'Duele', img: 'dolor.png', voice: 'me duele' },
-    { id: 'ayuda', cat: 'social', label: 'Ayuda', img: 'ayuda.png', voice: 'ayuda' },
-    { id: 'si', cat: 'social', label: 'Sí', img: 'si.png', voice: 'sí' },
-    { id: 'no', cat: 'social', label: 'No', img: 'no.png', voice: 'no' },
-    { id: 'papa', cat: 'subject', label: 'Papá', img: 'papa.png', voice: 'papá' },
+    { id: 'cabeza', cat: 'medical', label: 'Cabeza', img: 'cabeza.png', voice: 'la cabeza' },
     { id: 'mama', cat: 'subject', label: 'Mamá', img: 'mama.png', voice: 'mamá' },
-    { id: 'dormir', cat: 'action', label: 'Dormir', img: 'dormir.png', voice: 'dormir' }
+    { id: 'papa', cat: 'subject', label: 'Papá', img: 'papa.png', voice: 'papá' },
+    { id: 'dormir', cat: 'action', label: 'Dormir', img: 'dormir.png', voice: 'dormir' },
+    { id: 'feliz', cat: 'social', label: 'Feliz', img: 'feliz.png', voice: 'estoy feliz' },
+    { id: 'triste', cat: 'social', label: 'Triste', img: 'triste.png', voice: 'estoy triste' }
 ];
 
 let currentPhrase = [];
@@ -33,7 +33,6 @@ function navigateTo(view) {
 
 function renderSAAC() {
     const grid = document.getElementById('pictogram-grid');
-    if (!grid) return;
     grid.innerHTML = '';
     vocabulary.forEach(item => {
         const card = document.createElement('div');
@@ -42,7 +41,10 @@ function renderSAAC() {
             <img src="assets/pics/${item.img}" onerror="this.src='https://via.placeholder.com/80?text=${item.label}'">
             <span class="picto-label">${item.label}</span>
         `;
-        card.onclick = () => addToPhrase(item);
+        card.onclick = (e) => {
+            e.preventDefault(); // Evita interferencia con scroll
+            addToPhrase(item);
+        };
         grid.appendChild(card);
     });
 }
@@ -55,17 +57,12 @@ function addToPhrase(item) {
 
 function updatePhraseDisplay() {
     const display = document.getElementById('current-phrase');
-    if (!display) return;
     display.innerHTML = '';
     currentPhrase.forEach((item, index) => {
         const img = document.createElement('img');
         img.src = `assets/pics/${item.img}`;
         img.onerror = (e) => e.target.src = `https://via.placeholder.com/50?text=${item.label}`;
-        img.onclick = (e) => {
-            e.stopPropagation();
-            currentPhrase.splice(index, 1);
-            updatePhraseDisplay();
-        };
+        img.onclick = () => { currentPhrase.splice(index, 1); updatePhraseDisplay(); };
         display.appendChild(img);
     });
 }
@@ -78,15 +75,19 @@ function speak(text) {
 }
 
 function speakPhrase() {
-    if (currentPhrase.length === 0) return;
     speak(currentPhrase.map(i => i.voice).join(' '));
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    const clearBtn = document.getElementById('clear-btn');
-    if (clearBtn) clearBtn.onclick = () => { currentPhrase = []; updatePhraseDisplay(); };
-});
+// SOLUCIÓN PARA IPHONE: Prevenir el bloqueo de scroll
+document.addEventListener('touchmove', function(e) {
+    if (e.target.closest('.scrollable') || e.target.closest('#pictogram-grid')) {
+        // Permitimos el scroll solo en estos elementos
+    } else {
+        e.preventDefault();
+    }
+}, { passive: false });
 
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js').catch(() => {});
-}
+document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('clear-btn');
+    if (btn) btn.onclick = () => { currentPhrase = []; updatePhraseDisplay(); };
+});
