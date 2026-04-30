@@ -48,6 +48,16 @@
                         <button id="clear-btn">✖</button>
                     </div>
                 </header>
+
+                <nav id="category-bar">
+                    <button class="cat-btn active" onclick="filterCategory('all')">TODOS</button>
+                    <button class="cat-btn" onclick="filterCategory('social')">SOCIAL</button>
+                    <button class="cat-btn" onclick="filterCategory('medical')">SALUD</button>
+                    <button class="cat-btn" onclick="filterCategory('action')">ACCIONES</button>
+                    <button class="cat-btn" onclick="filterCategory('noun')">OBJETOS</button>
+                    <button class="cat-btn" onclick="filterCategory('place')">LUGARES</button>
+                </nav>
+
                 <main id="pictogram-grid"></main>
             </div>
         </section>
