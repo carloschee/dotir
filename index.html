@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Dótir SAAC</title>
+    <title>Dótir SAAC - Optimizado</title>
     <style>
         :root {
             --bg-app: #f0f4f7;
@@ -12,38 +12,26 @@
             --cat-medical: #ef9a9a; --cat-social: #ffccbc; --cat-place: #d1d8e0;
         }
 
-        /* 1. RESET PARA BLOQUEAR SCROLL GLOBAL */
+        /* RESET Y BLOQUEO DE SCROLL GLOBAL */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         html, body { 
-            margin: 0; padding: 0; 
-            width: 100%; height: 100%;
-            overflow: hidden; 
-            background: var(--bg-app);
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            overflow: hidden; background: var(--bg-app);
             font-family: system-ui, -apple-system, sans-serif;
-            position: fixed; /* Crucial para iOS y Firefox */
+            position: fixed; 
         }
 
-        /* 2. CONTENEDOR FLEX QUE SE AJUSTA AL ALTO DE PANTALLA */
         #app-container { 
-            display: flex; 
-            flex-direction: column; 
-            height: 100vh; 
-            height: 100dvh; 
-            width: 100vw;
+            display: flex; flex-direction: column; 
+            height: 100vh; height: 100dvh; width: 100vw;
             overflow: hidden;
         }
 
-        .view { 
-            display: flex; 
-            flex-direction: column; 
-            flex: 1;
-            overflow: hidden;
-        }
-        
+        .view { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
         .hidden { display: none !important; }
 
-        /* 3. ELEMENTOS FIJOS (NO SE ENCOGEN) */
+        /* CABECERAS FIJAS */
         .module-nav-bar { 
             height: 60px; flex-shrink: 0;
             background: white; display: flex; align-items: center; 
@@ -64,26 +52,25 @@
         }
         #category-bar::-webkit-scrollbar { display: none; }
 
-        /* 4. EL GRID (EL ÚNICO QUE TIENE SCROLL) */
+        /* GRID CON SCROLL INDEPENDIENTE */
         #pictogram-grid { 
-            flex: 1; /* Ocupa el resto del alto */
+            flex: 1; 
             overflow-y: auto !important; 
             -webkit-overflow-scrolling: touch; 
             display: grid; 
             grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)); 
             gap: 12px; 
-            padding: 10px 15px 100px; /* Padding extra abajo para scroll */
+            padding: 10px 15px 120px; 
             background: var(--bg-app);
         }
 
-        /* DISEÑO DE TARJETAS */
+        /* TARJETAS */
         .picto-card { 
             position: relative; background: white; border-radius: var(--radius); 
             padding: 10px; display: flex; flex-direction: column; 
             align-items: center; justify-content: center; 
             border-bottom: 4px solid rgba(0,0,0,0.1); 
-            min-height: 120px;
-            cursor: pointer; user-select: none;
+            min-height: 120px; cursor: pointer; user-select: none;
         }
         .picto-card img { width: 70%; height: auto; pointer-events: none; }
         .picto-label { margin-top: 6px; font-weight: bold; font-size: 0.7rem; text-align: center; color: #333; }
@@ -91,7 +78,7 @@
         .fav-star { position: absolute; top: 5px; right: 5px; color: #f1c40f; display: none; font-size: 1.1rem; }
         .is-fav .fav-star { display: block; }
 
-        /* COLORES */
+        /* COLORES CATEGORÍAS */
         .cat-subject { background-color: var(--cat-subject); }
         .cat-action { background-color: var(--cat-action); }
         .cat-noun { background-color: var(--cat-noun); }
@@ -102,7 +89,7 @@
         .cat-btn { padding: 8px 15px; border-radius: 20px; border: 2px solid #ddd; background: white; font-weight: bold; cursor: pointer; white-space: nowrap; font-size: 0.75rem; }
         .cat-btn.active { background: #4a90e2; color: white; border-color: #4a90e2; }
 
-        /* CONTROLES DE FRASE */
+        /* CONTROLES FRASE */
         #speak-btn { background: #55efc4; border: none; width: 45px; height: 45px; border-radius: 50%; color: white; font-size: 20px; cursor: pointer; }
         #clear-btn { background: #ff7675; border: none; width: 45px; height: 45px; border-radius: 50%; color: white; font-size: 20px; cursor: pointer; }
         .phrase-display { flex: 1; display: flex; gap: 5px; overflow-x: auto; align-items: center; height: 100%; }
@@ -118,23 +105,23 @@
         <section id="view-menu" class="view">
             <header style="text-align:center; padding:40px 20px;">
                 <h1 style="margin:0; font-size:2.5rem;">Dótir</h1>
-                <p style="color:#636e72;">Comunicador Aumentativo</p>
+                <p style="color:#636e72;">Comunicador SAAC Optimizado</p>
             </header>
             <div class="menu-item" onclick="navigateTo('saac')">
                 <span style="font-size:2rem;">💬</span>
-                <div><b style="display:block;">Comunicador</b><span>Abrir el tablero</span></div>
+                <div><b style="display:block;">Comunicador</b><span>Tablero de voz</span></div>
             </div>
             <div class="menu-item" onclick="accessSettings()">
                 <span style="font-size:2rem;">⚙️</span>
-                <div><b style="display:block;">Ajustes</b><span>Configuración y Offline</span></div>
+                <div><b style="display:block;">Ajustes</b><span>Configuración</span></div>
             </div>
         </section>
 
         <section id="view-saac" class="view hidden">
             <nav class="module-nav-bar">
-                <button onclick="navigateTo('menu')" style="border:none; background:#eee; padding:8px 15px; border-radius:10px; font-weight:bold; cursor:pointer;">⬅ Volver</button>
-                <div style="font-weight:bold;">TABLERO</div>
-                <div style="width:60px;"></div>
+                <button onclick="navigateTo('menu')" style="border:none; background:#eee; padding:8px 15px; border-radius:10px; font-weight:bold; cursor:pointer;">⬅ Menú</button>
+                <div id="status-voice" style="font-size: 0.7rem; color: #999;">Voz lista</div>
+                <div style="width:40px;"></div>
             </nav>
 
             <header id="phrase-section">
@@ -164,7 +151,41 @@
         let favorites = JSON.parse(localStorage.getItem('dotir_favs')) || [];
         let currentPhrase = [];
         let activeFilter = 'favs';
+        let selectedVoice = null;
 
+        // --- OPTIMIZACIÓN TTS ---
+        function loadVoices() {
+            const voices = window.speechSynthesis.getVoices();
+            // Buscamos la mejor voz en español disponible en el sistema
+            selectedVoice = voices.find(v => v.lang.includes('es') && v.name.includes('Paulina')) || 
+                            voices.find(v => v.lang.includes('es') && v.name.includes('Google')) ||
+                            voices.find(v => v.lang.includes('es')) ||
+                            voices[0];
+            if(selectedVoice) document.getElementById('status-voice').innerText = "Voz: " + selectedVoice.name;
+        }
+
+        window.speechSynthesis.onvoiceschanged = loadVoices;
+        loadVoices();
+
+        function speak(text) {
+            window.speechSynthesis.cancel(); // Detiene cualquier audio previo (reactividad)
+            const msg = new SpeechSynthesisUtterance(text);
+            if (selectedVoice) msg.voice = selectedVoice;
+            msg.lang = 'es-ES';
+            msg.rate = 0.9;  // Velocidad levemente reducida para claridad
+            msg.pitch = 1.0; // Tono normal
+            msg.volume = 1.0;
+            window.speechSynthesis.speak(msg);
+        }
+
+        function speakPhrase() { 
+            if (currentPhrase.length > 0) {
+                const fullText = currentPhrase.map(i => i.voice).join(' ');
+                speak(fullText);
+            } 
+        }
+
+        // --- LÓGICA DE NAVEGACIÓN Y RENDER ---
         function getCategory(name) {
             const n = name.toLowerCase();
             if (n === "yo quiero") return "subject";
@@ -182,13 +203,16 @@
         function navigateTo(view) {
             document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
             document.getElementById(`view-${view}`).classList.remove('hidden');
-            if (view === 'saac') renderSAAC();
+            if (view === 'saac') {
+                window.speechSynthesis.cancel(); // "Despierta" el audio en iOS
+                renderSAAC();
+            }
         }
 
         function filterCategory(cat) {
             activeFilter = cat;
             document.querySelectorAll('.cat-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.innerText.toLowerCase().includes(cat.substring(0,3)));
+                btn.classList.toggle('active', btn.getAttribute('onclick').includes(`'${cat}'`));
             });
             renderSAAC();
         }
@@ -202,7 +226,7 @@
                            vocabulary.filter(v => v.cat === activeFilter);
             
             if (activeFilter === 'favs' && filtered.length === 0) {
-                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color:#636e72;"><h3>Favoritos vacío</h3><p>Mantén pulsado un pictograma para añadirlo.</p></div>';
+                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color:#636e72;"><h3>Panel de Favoritos</h3><p>Mantén pulsado un pictograma en otras categorías para que aparezca aquí.</p></div>';
                 return;
             }
 
@@ -246,19 +270,11 @@
             });
         }
 
-        function speak(text) {
-            window.speechSynthesis.cancel();
-            const msg = new SpeechSynthesisUtterance(text);
-            msg.lang = 'es-ES';
-            window.speechSynthesis.speak(msg);
-        }
-
-        function speakPhrase() { if (currentPhrase.length > 0) speak(currentPhrase.map(i => i.voice).join(' ')); }
         function clearPhrase() { currentPhrase = []; updatePhraseDisplay(); }
 
         function accessSettings() {
-            const num = prompt("Escribe '123' para entrar a ajustes:");
-            if (num === '123') alert("Mantenimiento de caché activado.");
+            const pass = prompt("Acceso restringido. Código:");
+            if (pass === '1234') alert("Ajustes de sistema.");
         }
     </script>
 </body>
