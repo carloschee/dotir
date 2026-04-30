@@ -9,55 +9,52 @@
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
 body, html {
-  margin: 0; padding: 0; height: 100%; width: 100%;
+  margin: 0; padding: 0; 
+  height: 100%; width: 100%;
   font-family: system-ui, -apple-system, sans-serif;
   background-color: var(--bg-app);
-  overflow: hidden; /* Evita scroll en el body */
+  overflow: hidden; /* Prohibido el scroll en la página raíz */
 }
 
+/* Contenedor principal ajustado para Safe Areas */
 #app-container {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100dvh; /* dvh = dynamic viewport height para iOS */
   padding-top: env(safe-area-inset-top);
   padding-bottom: env(safe-area-inset-bottom);
 }
 
 .view { 
-    display: flex; 
-    flex-direction: column; 
-    height: 100%; 
-    width: 100%; 
-    overflow: hidden; 
+  display: flex; 
+  flex-direction: column; 
+  flex: 1; /* Ocupa todo el espacio */
+  overflow: hidden; 
 }
 
 .hidden { display: none !important; }
 
-/* Contenedor de scroll común */
-.scroll-container {
-  flex-grow: 1;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch; /* Scroll suave en iOS */
-  padding: 10px;
+/* CLAVE: Contenedor con scroll habilitado */
+.scrollable {
+  flex: 1;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch; /* Habilita el "rebote" suave en iOS */
+  min-height: 0; /* Parche para que flexbox respete el scroll */
 }
 
-/* --- Menú --- */
+/* --- Estilos Menú --- */
 .menu-header { padding: 15px; text-align: center; flex-shrink: 0; }
-.menu-grid { display: flex; flex-direction: column; gap: 15px; }
-
-@media (min-width: 768px) {
-  .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); padding: 40px; }
-}
+.menu-grid { padding: 15px; }
 
 .menu-item {
   background: white; border-radius: var(--radius-lg);
   padding: 20px; display: flex; align-items: center; gap: 15px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 15px;
 }
 
 /* --- Módulo SAAC --- */
 .module-nav-bar {
-  background: white; padding: 8px 15px;
+  background: white; padding: 10px 15px;
   display: flex; align-items: center; justify-content: space-between;
   border-bottom: 1px solid #ddd;
   flex-shrink: 0;
@@ -66,50 +63,49 @@ body, html {
 #saac-content {
   display: flex;
   flex-direction: column;
-  height: 100%; /* Toma todo el alto disponible */
+  flex: 1;
   overflow: hidden;
 }
 
 #phrase-section {
-  flex-shrink: 0; /* No se encoge */
-  height: 85px; background: white; margin: 8px;
-  border-radius: 18px; display: flex; align-items: center;
+  flex-shrink: 0;
+  height: 80px; background: white; margin: 10px;
+  border-radius: 15px; display: flex; align-items: center;
   padding: 0 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-.phrase-display { flex-grow: 1; display: flex; gap: 5px; overflow-x: auto; height: 100%; align-items: center; }
-.phrase-display img { height: 50px; width: 50px; object-fit: contain; }
+.phrase-display { flex: 1; display: flex; gap: 5px; overflow-x: auto; align-items: center; }
+.phrase-display img { height: 45px; width: 45px; object-fit: contain; }
 
 #clear-btn, #speak-btn {
-  width: 40px; height: 40px; border-radius: 50%; border: none; color: white; flex-shrink: 0;
+  width: 40px; height: 40px; border-radius: 50%; border: none; color: white;
 }
-#clear-btn { background: #ff7675; margin-left: 5px; }
-#speak-btn { background: #55efc4; }
+#clear-btn { background: #ff7675; }
+#speak-btn { background: #55efc4; margin-right: 5px; }
 
-/* Grid de Pictogramas con Scroll real */
+/* Grid de Pictogramas */
 #pictogram-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); 
-  gap: 10px;
-  padding: 10px;
-  /* El scroll ocurre aquí */
+  grid-template-columns: repeat(auto-fill, minmax(95px, 1fr)); 
+  gap: 12px;
+  padding: 15px;
 }
 
 @media (min-width: 768px) { 
-  #pictogram-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; padding: 20px; }
+  #pictogram-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
   #phrase-section { height: 130px; }
   .phrase-display img { height: 90px; width: 90px; }
 }
 
 .picto-card {
   background: white; border-radius: 18px;
-  padding: 8px; text-align: center;
+  padding: 10px; text-align: center;
   border-bottom: 4px solid rgba(0,0,0,0.1);
   display: flex; flex-direction: column; align-items: center;
 }
 
-.picto-card img { width: 100%; max-width: 70px; height: auto; aspect-ratio: 1/1; }
-.picto-label { margin-top: 5px; font-weight: bold; font-size: 0.7rem; text-transform: uppercase; }
+.picto-card img { width: 100%; max-width: 75px; height: auto; aspect-ratio: 1/1; }
+.picto-label { margin-top: 5px; font-weight: bold; font-size: 0.75rem; text-transform: uppercase; }
 
 /* Colores Fitzgerald */
 .cat-subject { background-color: var(--cat-subject); }

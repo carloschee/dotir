@@ -4,17 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Dótir SAAC</title>
-
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
     <link rel="manifest" href="manifest.json">
-
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-    <div id="app-container">
+    <div id="app-container" class="viewport-ios">
         
         <section id="view-menu" class="view">
             <header class="menu-header">
@@ -22,7 +20,7 @@
                 <p>¿Qué vamos a hacer hoy?</p>
             </header>
             
-            <div class="menu-grid scroll-container">
+            <div class="menu-grid scrollable">
                 <article class="menu-item" onclick="navigateTo('saac')">
                     <div class="menu-icon">💬</div>
                     <div class="menu-info">
@@ -57,7 +55,7 @@
                     </div>
                 </header>
 
-                <main id="pictogram-grid" class="scroll-container">
+                <main id="pictogram-grid" class="scrollable">
                     </main>
             </div>
         </section>

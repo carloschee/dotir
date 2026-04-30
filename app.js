@@ -3,16 +3,17 @@ const vocabulary = [
     { id: 'quiero', cat: 'action', label: 'Quiero', img: 'quiero.png', voice: 'quiero' },
     { id: 'comer', cat: 'action', label: 'Comer', img: 'comer.png', voice: 'comer' },
     { id: 'beber', cat: 'action', label: 'Beber', img: 'beber.png', voice: 'beber' },
-    { id: 'ir', cat: 'action', label: 'Ir', img: 'ir.png', voice: 'ir' },
-    { id: 'ver', cat: 'action', label: 'Ver', img: 'ver.png', voice: 'ver' },
+    { id: 'banio', cat: 'noun', label: 'Baño', img: 'banio.png', voice: 'ir al baño' },
     { id: 'agua', cat: 'noun', label: 'Agua', img: 'agua.png', voice: 'agua' },
-    { id: 'comida', cat: 'noun', label: 'Comida', img: 'comida.png', voice: 'comida' },
-    { id: 'banio', cat: 'noun', label: 'Baño', img: 'banio.png', voice: 'baño' },
+    { id: 'jugar', cat: 'action', label: 'Jugar', img: 'jugar.png', voice: 'jugar' },
+    { id: 'pelota', cat: 'noun', label: 'Pelota', img: 'pelota.png', voice: 'la pelota' },
     { id: 'duele', cat: 'medical', label: 'Duele', img: 'dolor.png', voice: 'me duele' },
-    { id: 'cabeza', cat: 'medical', label: 'Cabeza', img: 'cabeza.png', voice: 'la cabeza' },
     { id: 'ayuda', cat: 'social', label: 'Ayuda', img: 'ayuda.png', voice: 'ayuda' },
-    { id: 'hola', cat: 'social', label: 'Hola', img: 'hola.png', voice: 'hola' },
-    { id: 'gracias', cat: 'social', label: 'Gracias', img: 'gracias.png', voice: 'gracias' }
+    { id: 'si', cat: 'social', label: 'Sí', img: 'si.png', voice: 'sí' },
+    { id: 'no', cat: 'social', label: 'No', img: 'no.png', voice: 'no' },
+    { id: 'papa', cat: 'subject', label: 'Papá', img: 'papa.png', voice: 'papá' },
+    { id: 'mama', cat: 'subject', label: 'Mamá', img: 'mama.png', voice: 'mamá' },
+    { id: 'dormir', cat: 'action', label: 'Dormir', img: 'dormir.png', voice: 'dormir' }
 ];
 
 let currentPhrase = [];
