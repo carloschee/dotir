@@ -24,7 +24,6 @@
                         <span class="desc">Entrar al tablero</span>
                     </div>
                 </article>
-                
                 <article class="menu-item" onclick="accessSettings()">
                     <div class="menu-icon">⚙️</div>
                     <div class="menu-info">
@@ -52,12 +51,13 @@
                 </header>
 
                 <nav id="category-bar">
-                    <button class="cat-btn active" onclick="filterCategory('all')">TODOS</button>
+                    <button class="cat-btn active" onclick="filterCategory('favs')">⭐ FAVORITOS</button>
                     <button class="cat-btn" onclick="filterCategory('social')">SOCIAL</button>
                     <button class="cat-btn" onclick="filterCategory('medical')">SALUD</button>
                     <button class="cat-btn" onclick="filterCategory('action')">ACCIONES</button>
                     <button class="cat-btn" onclick="filterCategory('noun')">OBJETOS</button>
                     <button class="cat-btn" onclick="filterCategory('place')">LUGARES</button>
+                    <button class="cat-btn" onclick="filterCategory('all')">TODOS</button>
                 </nav>
 
                 <main id="pictogram-grid"></main>
@@ -73,16 +73,10 @@
             <div class="settings-content">
                 <div class="settings-card">
                     <h3>Almacenamiento Offline</h3>
-                    <p>Descarga las imágenes para usar la app sin internet.</p>
-                    <button class="settings-btn" onclick="downloadAllAssets()">⬇ Descargar todo</button>
-                    <div id="download-progress" class="progress-bar hidden">
-                        <div id="progress-fill"></div>
-                    </div>
+                    <button class="settings-btn" onclick="downloadAllAssets()">⬇ Descargar imágenes</button>
                     <p id="status-msg"></p>
                 </div>
-
                 <div class="settings-card danger">
-                    <h3>Mantenimiento</h3>
                     <button class="settings-btn danger" onclick="clearAppData()">🗑 Limpiar y Refrescar</button>
                 </div>
             </div>

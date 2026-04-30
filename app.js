@@ -1,6 +1,8 @@
-const rawFiles = [
-    "abeja", "abrazo", "adiós", "ahora", "antes", "autobús", "avión", "ayuda", "bicicleta", "bien", "brazo", "caballo", "cabeza", "cansado", "caracol", "coche", "curita", "después", "dibujar", "diente", "dolor", "enfadado", "escuchar", "escuela", "espalda", "estomago", "farola", "fiebre", "flor", "frutería", "garganta", "gato", "gracias", "hola", "hospital", "jarabe", "kiosco", "lavar", "lluvia", "mal", "mano", "mareo", "mariposa", "miedo", "más", "no quiero", "no", "oler", "oído", "panadería", "papelera", "parque", "paso de cebra", "pastilla", "perro", "pez", "pie", "pierna", "poco", "por favor", "pájaro", "semáforo", "Sol", "solicitar permiso", "suave", "sí", "termómetro", "tocar", "tos", "tren", "triste", "vaca", "vacuna", "ver", "vómito", "yo quiero", "árbol"
-];
+const rawFiles = ["abeja", "abrazo", "adiós", "ahora", "antes", "autobús", "avión", "ayuda", "bicicleta", "bien", "brazo", "caballo", "cabeza", "cansado", "caracol", "coche", "curita", "después", "dibujar", "diente", "dolor", "enfadado", "escuchar", "escuela", "espalda", "estomago", "farola", "fiebre", "flor", "frutería", "garganta", "gato", "gracias", "hola", "hospital", "jarabe", "kiosco", "lavar", "lluvia", "mal", "mano", "mareo", "mariposa", "miedo", "más", "no quiero", "no", "oler", "oído", "panadería", "papelera", "parque", "paso de cebra", "pastilla", "perro", "pez", "pie", "pierna", "poco", "por favor", "pájaro", "semáforo", "Sol", "solicitar permiso", "suave", "sí", "termómetro", "tocar", "tos", "tren", "triste", "vaca", "vacuna", "ver", "vómito", "yo quiero", "árbol"];
+
+let favorites = JSON.parse(localStorage.getItem('dotir_favs')) || [];
+let currentPhrase = [];
+let activeFilter = 'favs';
 
 function getCategory(name) {
     const n = name.toLowerCase();
@@ -16,32 +18,20 @@ const vocabulary = rawFiles.map(file => ({
     id: file, label: file.toUpperCase(), img: `assets/pics/${file}.png`, voice: file, cat: getCategory(file)
 }));
 
-let currentPhrase = [];
-let activeFilter = 'all';
-
 function navigateTo(view) {
     document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
     const target = document.getElementById(`view-${view}`);
     if (target) {
         target.classList.remove('hidden');
-        if (view === 'saac') {
-            setTimeout(renderSAAC, 50); // Timeout crítico para forzar renderizado en iOS
-        }
+        if (view === 'saac') setTimeout(renderSAAC, 50);
     }
-}
-
-function accessSettings() {
-    const n1 = Math.floor(Math.random() * 10) + 1;
-    const n2 = Math.floor(Math.random() * 10) + 1;
-    const answer = prompt(`RETO PARA ADULTOS:\n¿Cuánto es ${n1} + ${n2}?`);
-    if (parseInt(answer) === (n1 + n2)) navigateTo('settings');
 }
 
 function filterCategory(cat) {
     activeFilter = cat;
     document.querySelectorAll('.cat-btn').forEach(btn => {
-        const txt = btn.innerText.toLowerCase();
-        btn.classList.toggle('active', txt === cat || (cat === 'all' && txt === 'todos'));
+        const onclickAttr = btn.getAttribute('onclick');
+        btn.classList.toggle('active', onclickAttr.includes(`'${cat}'`));
     });
     renderSAAC();
 }
@@ -51,15 +41,26 @@ function renderSAAC() {
     if (!grid) return;
     grid.innerHTML = '';
     
-    const filtered = activeFilter === 'all' ? vocabulary : vocabulary.filter(v => v.cat === activeFilter);
+    let filtered;
+    if (activeFilter === 'all') filtered = vocabulary;
+    else if (activeFilter === 'favs') filtered = vocabulary.filter(v => favorites.includes(v.id));
+    else filtered = vocabulary.filter(v => v.cat === activeFilter);
     
+    if (activeFilter === 'favs' && filtered.length === 0) {
+        grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 40px;">No hay favoritos. <br>Mantén pulsado un icono para añadirlo.</p>';
+        return;
+    }
+
     filtered.forEach(item => {
+        const isFav = favorites.includes(item.id);
         const card = document.createElement('div');
-        card.className = `picto-card cat-${item.cat}`;
-        card.innerHTML = `
-            <img src="${item.img}" alt="${item.label}" onerror="this.src='https://via.placeholder.com/100?text=${item.label}'">
-            <span class="picto-label">${item.label}</span>
-        `;
+        card.className = `picto-card cat-${item.cat} ${isFav ? 'is-fav' : ''}`;
+        card.innerHTML = `<div class="fav-star">⭐</div><img src="${item.img}" onerror="this.src='https://via.placeholder.com/100?text=${item.label}'"><span class="picto-label">${item.label}</span>`;
+
+        let timer;
+        card.onmousedown = card.ontouchstart = () => timer = setTimeout(() => toggleFavorite(item.id), 800);
+        card.onmouseup = card.ontouchend = card.onmouseleave = () => clearTimeout(timer);
+        
         card.onclick = () => {
             currentPhrase.push(item);
             updatePhraseDisplay();
@@ -69,6 +70,14 @@ function renderSAAC() {
     });
 }
 
+function toggleFavorite(id) {
+    if (favorites.includes(id)) favorites = favorites.filter(f => f !== id);
+    else favorites.push(id);
+    localStorage.setItem('dotir_favs', JSON.stringify(favorites));
+    renderSAAC();
+    if (navigator.vibrate) navigator.vibrate(50);
+}
+
 function updatePhraseDisplay() {
     const display = document.getElementById('current-phrase');
     if (!display) return;
@@ -76,11 +85,7 @@ function updatePhraseDisplay() {
     currentPhrase.forEach((item, index) => {
         const img = document.createElement('img');
         img.src = item.img;
-        img.onclick = (e) => {
-            e.stopPropagation();
-            currentPhrase.splice(index, 1);
-            updatePhraseDisplay();
-        };
+        img.onclick = () => { currentPhrase.splice(index, 1); updatePhraseDisplay(); };
         display.appendChild(img);
     });
 }
@@ -92,33 +97,28 @@ function speak(text) {
     window.speechSynthesis.speak(msg);
 }
 
-function speakPhrase() {
-    if (currentPhrase.length > 0) speak(currentPhrase.map(i => i.voice).join(' '));
-}
+function speakPhrase() { if (currentPhrase.length > 0) speak(currentPhrase.map(i => i.voice).join(' ')); }
+function clearPhrase() { currentPhrase = []; updatePhraseDisplay(); }
 
-function clearPhrase() {
-    currentPhrase = [];
-    updatePhraseDisplay();
+function accessSettings() {
+    const n1 = Math.floor(Math.random() * 10);
+    const n2 = Math.floor(Math.random() * 10);
+    if (prompt(`Suma ${n1} + ${n2}`) == (n1 + n2)) navigateTo('settings');
 }
 
 async function downloadAllAssets() {
     const status = document.getElementById('status-msg');
-    const fill = document.getElementById('progress-fill');
-    document.getElementById('download-progress').classList.remove('hidden');
-    const urls = ['index.html', 'styles.css', 'app.js', ...vocabulary.map(v => v.img)];
+    status.innerText = "Descargando...";
     const cache = await caches.open('dotir-v1');
-    for (let i = 0; i < urls.length; i++) {
-        await cache.add(urls[i]).catch(e => console.log("Skip:", urls[i]));
-        fill.style.width = `${Math.round(((i + 1) / urls.length) * 100)}%`;
-        status.innerText = `Descargando: ${i + 1} de ${urls.length}`;
-    }
-    status.innerText = "✅ Todo listo para modo offline.";
+    await cache.addAll(['index.html', 'styles.css', 'app.js', ...vocabulary.map(v => v.img)]);
+    status.innerText = "✅ Listo";
 }
 
 async function clearAppData() {
-    if (confirm("¿Limpiar y refrescar?")) {
+    if (confirm("¿Limpiar todo?")) {
+        localStorage.clear();
         const keys = await caches.keys();
-        await Promise.all(keys.map(key => caches.delete(key)));
-        window.location.reload(true);
+        await Promise.all(keys.map(k => caches.delete(k)));
+        location.reload();
     }
 }
