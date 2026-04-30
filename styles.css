@@ -1,4 +1,3 @@
-/* --- Variables y Reset --- */
 :root {
   --bg-app: #f0f4f7;
   --bg-card: #ffffff;
@@ -11,125 +10,106 @@
 
 body, html {
   margin: 0; padding: 0; height: 100%; width: 100%;
-  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-family: system-ui, -apple-system, sans-serif;
   background-color: var(--bg-app);
-  overflow: hidden;
+  overflow: hidden; /* Evita scroll en el body */
 }
 
-/* --- Ajuste Crítico para iPhone SE / iPad --- */
 #app-container {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  /* Añade espacio dinámico arriba para no chocar con la hora/batería */
-  padding-top: env(safe-area-inset-top); 
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
-.view { display: flex; flex-direction: column; height: 100%; width: 100%; }
+.view { 
+    display: flex; 
+    flex-direction: column; 
+    height: 100%; 
+    width: 100%; 
+    overflow: hidden; 
+}
+
 .hidden { display: none !important; }
 
-/* --- Menú Principal --- */
-.menu-header { padding: 20px; text-align: center; }
-.menu-header h1 { margin-bottom: 5px; }
-
-.menu-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 15px;
-  padding: 15px;
-  max-width: 1000px;
-  margin: 0 auto;
+/* Contenedor de scroll común */
+.scroll-container {
+  flex-grow: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch; /* Scroll suave en iOS */
+  padding: 10px;
 }
 
+/* --- Menú --- */
+.menu-header { padding: 15px; text-align: center; flex-shrink: 0; }
+.menu-grid { display: flex; flex-direction: column; gap: 15px; }
+
 @media (min-width: 768px) {
-  .menu-grid { grid-template-columns: repeat(2, 1fr); gap: 30px; }
-  .menu-header { padding: 50px 20px; }
-  .menu-header h1 { font-size: 3.5rem; }
+  .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); padding: 40px; }
 }
 
 .menu-item {
   background: white; border-radius: var(--radius-lg);
   padding: 20px; display: flex; align-items: center; gap: 15px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.05); cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
 }
 
-/* --- Barra de Navegación del Módulo --- */
+/* --- Módulo SAAC --- */
 .module-nav-bar {
-  background: white; 
-  /* Padding extra para que el botón de "Menú" no se pegue arriba */
-  padding: 10px 15px;
-  display: flex; 
-  align-items: center; 
-  justify-content: space-between;
+  background: white; padding: 8px 15px;
+  display: flex; align-items: center; justify-content: space-between;
   border-bottom: 1px solid #ddd;
+  flex-shrink: 0;
 }
 
-#module-title { font-weight: bold; color: #4a5568; }
-
-.back-btn {
-  background: #dfe6e9;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 10px;
-  font-weight: bold;
-  font-size: 0.9rem;
+#saac-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* Toma todo el alto disponible */
+  overflow: hidden;
 }
 
-/* --- Comunicador SAAC --- */
 #phrase-section {
-  height: 90px; background: white; margin: 10px;
+  flex-shrink: 0; /* No se encoge */
+  height: 85px; background: white; margin: 8px;
   border-radius: 18px; display: flex; align-items: center;
   padding: 0 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-.phrase-display { flex-grow: 1; display: flex; gap: 5px; overflow-x: auto; height: 80%; align-items: center;}
-.phrase-display img { height: 55px; width: 55px; object-fit: contain; }
+.phrase-display { flex-grow: 1; display: flex; gap: 5px; overflow-x: auto; height: 100%; align-items: center; }
+.phrase-display img { height: 50px; width: 50px; object-fit: contain; }
 
 #clear-btn, #speak-btn {
-  width: 42px; height: 42px; border-radius: 50%; border: none;
-  color: white; font-size: 16px; margin-left: 5px;
+  width: 40px; height: 40px; border-radius: 50%; border: none; color: white; flex-shrink: 0;
 }
-#clear-btn { background: #ff7675; }
+#clear-btn { background: #ff7675; margin-left: 5px; }
 #speak-btn { background: #55efc4; }
 
-/* --- Grid Adaptativo --- */
+/* Grid de Pictogramas con Scroll real */
 #pictogram-grid {
-  flex-grow: 1;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(95px, 1fr)); 
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); 
   gap: 10px;
   padding: 10px;
-  overflow-y: auto;
+  /* El scroll ocurre aquí */
 }
 
 @media (min-width: 768px) { 
-  #pictogram-grid {
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 20px; padding: 20px;
-  }
-  #phrase-section { height: 140px; margin: 20px; }
-  .phrase-display img { height: 100px; width: 100px; }
-  #clear-btn, #speak-btn { width: 65px; height: 65px; font-size: 24px; }
-  .back-btn { padding: 12px 20px; font-size: 1rem; }
+  #pictogram-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; padding: 20px; }
+  #phrase-section { height: 130px; }
+  .phrase-display img { height: 90px; width: 90px; }
 }
 
-/* Tarjetas */
 .picto-card {
   background: white; border-radius: 18px;
-  padding: 10px; text-align: center;
-  display: flex; flex-direction: column; align-items: center;
-  justify-content: center;
+  padding: 8px; text-align: center;
   border-bottom: 4px solid rgba(0,0,0,0.1);
+  display: flex; flex-direction: column; align-items: center;
 }
 
-.picto-card:active { transform: scale(0.95); }
-.picto-card img { width: 100%; max-width: 80px; height: auto; aspect-ratio: 1/1; }
-.picto-label { margin-top: 5px; font-weight: bold; font-size: 0.75rem; text-transform: uppercase; }
-
-@media (min-width: 768px) {
-  .picto-label { font-size: 0.95rem; margin-top: 10px; }
-  .picto-card img { max-width: 110px; }
-}
+.picto-card img { width: 100%; max-width: 70px; height: auto; aspect-ratio: 1/1; }
+.picto-label { margin-top: 5px; font-weight: bold; font-size: 0.7rem; text-transform: uppercase; }
 
 /* Colores Fitzgerald */
 .cat-subject { background-color: var(--cat-subject); }

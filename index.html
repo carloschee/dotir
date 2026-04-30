@@ -22,7 +22,7 @@
                 <p>¿Qué vamos a hacer hoy?</p>
             </header>
             
-            <div class="menu-grid">
+            <div class="menu-grid scroll-container">
                 <article class="menu-item" onclick="navigateTo('saac')">
                     <div class="menu-icon">💬</div>
                     <div class="menu-info">
@@ -52,12 +52,12 @@
                 <header id="phrase-section">
                     <div id="current-phrase" class="phrase-display"></div>
                     <div class="phrase-controls">
-                        <button id="speak-btn" onclick="speakPhrase()" aria-label="Escuchar">🔊</button>
-                        <button id="clear-btn" aria-label="Borrar">✖</button>
+                        <button id="speak-btn" onclick="speakPhrase()">🔊</button>
+                        <button id="clear-btn">✖</button>
                     </div>
                 </header>
 
-                <main id="pictogram-grid">
+                <main id="pictogram-grid" class="scroll-container">
                     </main>
             </div>
         </section>
