@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Dótir SAAC - Full Ops</title>
+    <title>Dótir SAAC - Live Search</title>
     <style>
         :root {
             --bg-app: #f0f4f7;
@@ -12,9 +12,8 @@
             --cat-medical: #ef9a9a; --cat-social: #ffccbc; --cat-place: #d1d8e0;
         }
 
-        /* RESET Y BLOQUEO DE SCROLL GLOBAL */
+        /* RESET Y ESTRUCTURA */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
         html, body { 
             margin: 0; padding: 0; width: 100%; height: 100%;
             overflow: hidden; background: var(--bg-app);
@@ -33,13 +32,13 @@
 
         /* CABECERAS FIJAS */
         .module-nav-bar { 
-            height: 60px; flex-shrink: 0;
+            height: 50px; flex-shrink: 0;
             background: white; display: flex; align-items: center; 
             justify-content: space-between; padding: 0 15px; border-bottom: 1px solid #ddd; 
         }
         
         #phrase-section { 
-            height: 100px; flex-shrink: 0;
+            height: 90px; flex-shrink: 0;
             background: white; margin: 10px; border-radius: var(--radius); 
             display: flex; align-items: center; padding: 0 10px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
@@ -52,7 +51,23 @@
         }
         #category-bar::-webkit-scrollbar { display: none; }
 
-        /* GRID CON SCROLL INDEPENDIENTE */
+        /* BARRA DE BÚSQUEDA (NUEVA) */
+        #search-container {
+            padding: 0 10px 10px;
+            flex-shrink: 0;
+        }
+        #live-search {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 25px;
+            border: 2px solid #ddd;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        #live-search:focus { border-color: #4a90e2; }
+
+        /* GRID CON SCROLL */
         #pictogram-grid { 
             flex: 1; 
             overflow-y: auto !important; 
@@ -60,7 +75,7 @@
             display: grid; 
             grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)); 
             gap: 12px; 
-            padding: 10px 15px 120px; 
+            padding: 5px 15px 120px; 
             background: var(--bg-app);
         }
 
@@ -74,7 +89,6 @@
         }
         .picto-card img { width: 70%; height: auto; pointer-events: none; }
         .picto-label { margin-top: 6px; font-weight: bold; font-size: 0.7rem; text-align: center; color: #333; }
-        
         .fav-star { position: absolute; top: 5px; right: 5px; color: #f1c40f; display: none; font-size: 1.1rem; }
         .is-fav .fav-star { display: block; }
 
@@ -109,22 +123,22 @@
         <section id="view-menu" class="view">
             <header style="text-align:center; padding:40px 20px;">
                 <h1 style="margin:0; font-size:2.5rem;">Dótir</h1>
-                <p style="color:#636e72;">Comunicador SAAC</p>
+                <p style="color:#636e72;">Comunicador Inteligente</p>
             </header>
             <div class="menu-item" onclick="navigateTo('saac')">
                 <span style="font-size:2rem;">💬</span>
-                <div><b style="display:block;">Comunicador</b><span>Abrir el tablero</span></div>
+                <div><b style="display:block;">Comunicador</b><span>Tablero con búsqueda</span></div>
             </div>
             <div class="menu-item" onclick="accessSettings()">
                 <span style="font-size:2rem;">⚙️</span>
-                <div><b style="display:block;">Ajustes</b><span>Configuración y Offline</span></div>
+                <div><b style="display:block;">Ajustes</b><span>Configuración</span></div>
             </div>
         </section>
 
         <section id="view-saac" class="view hidden">
             <nav class="module-nav-bar">
-                <button onclick="navigateTo('menu')" style="border:none; background:#eee; padding:8px 15px; border-radius:10px; font-weight:bold; cursor:pointer;">⬅ Menú</button>
-                <div id="status-voice" style="font-size: 0.7rem; color: #999;">Cargando voz...</div>
+                <button onclick="navigateTo('menu')" style="border:none; background:#eee; padding:8px 15px; border-radius:10px; font-weight:bold; cursor:pointer;">⬅</button>
+                <div id="status-voice" style="font-size: 0.7rem; color: #999;">Voz lista</div>
                 <div style="width:40px;"></div>
             </nav>
 
@@ -135,14 +149,18 @@
             </header>
 
             <nav id="category-bar">
-                <button class="cat-btn active" onclick="filterCategory('favs')">⭐ FAVS</button>
+                <button class="cat-btn active" onclick="filterCategory('favs')">⭐</button>
                 <button class="cat-btn" onclick="filterCategory('social')">SOCIAL</button>
                 <button class="cat-btn" onclick="filterCategory('medical')">SALUD</button>
                 <button class="cat-btn" onclick="filterCategory('action')">ACCIONES</button>
                 <button class="cat-btn" onclick="filterCategory('noun')">OBJETOS</button>
                 <button class="cat-btn" onclick="filterCategory('place')">LUGARES</button>
-                <button class="cat-btn" onclick="filterCategory('all')">TODOS</button>
+                <button class="cat-btn" onclick="filterCategory('all')">TODO</button>
             </nav>
+
+            <div id="search-container">
+                <input type="text" id="live-search" placeholder="🔍 Buscar ficha..." oninput="handleSearch(this.value)">
+            </div>
 
             <main id="pictogram-grid"></main>
         </section>
@@ -153,18 +171,14 @@
                 <div style="font-weight:bold;">AJUSTES</div>
                 <div style="width:60px;"></div>
             </nav>
-
             <div class="settings-card">
-                <h3>Contenido Offline</h3>
-                <p style="font-size: 0.9rem; color: #666;">Descarga todas las imágenes para usar la app sin internet.</p>
-                <button class="settings-btn btn-blue" onclick="downloadAllAssets()">⬇ Descargar todo</button>
-                <p id="status-msg" style="margin-top: 10px; font-weight: bold;"></p>
+                <h3>Offline</h3>
+                <button class="settings-btn btn-blue" onclick="downloadAllAssets()">⬇ Descargar Imágenes</button>
+                <p id="status-msg" style="margin-top:10px;"></p>
             </div>
-
             <div class="settings-card">
                 <h3>Mantenimiento</h3>
-                <p style="font-size: 0.9rem; color: #666;">Borra el caché y reinicia la aplicación.</p>
-                <button class="settings-btn btn-red" onclick="clearAppData()">🗑 Limpiar y Refrescar</button>
+                <button class="settings-btn btn-red" onclick="clearAppData()">🗑 Limpiar Caché</button>
             </div>
         </section>
 
@@ -176,6 +190,7 @@
         let favorites = JSON.parse(localStorage.getItem('dotir_favs')) || [];
         let currentPhrase = [];
         let activeFilter = 'favs';
+        let searchQuery = "";
         let selectedVoice = null;
 
         const vocabulary = rawFiles.map(file => ({
@@ -192,11 +207,10 @@
             return "noun";
         }
 
-        // --- TTS CORE ---
+        // --- TTS ---
         function loadVoices() {
             const voices = window.speechSynthesis.getVoices();
             selectedVoice = voices.find(v => v.lang.includes('es') && v.name.includes('Paulina')) || 
-                            voices.find(v => v.lang.includes('es') && v.name.includes('Google')) ||
                             voices.find(v => v.lang.includes('es')) || voices[0];
             if(selectedVoice) document.getElementById('status-voice').innerText = "Voz: " + selectedVoice.name;
         }
@@ -212,15 +226,23 @@
             window.speechSynthesis.speak(msg);
         }
 
-        // --- NAVEGACIÓN Y RENDER ---
+        // --- BÚSQUEDA ---
+        function handleSearch(val) {
+            searchQuery = val.toLowerCase();
+            renderSAAC();
+        }
+
+        // --- RENDER ---
         function navigateTo(view) {
             document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
             document.getElementById(`view-${view}`).classList.remove('hidden');
-            if (view === 'saac') { window.speechSynthesis.cancel(); renderSAAC(); }
+            if (view === 'saac') renderSAAC();
         }
 
         function filterCategory(cat) {
             activeFilter = cat;
+            document.getElementById('live-search').value = ""; // Limpiamos búsqueda al cambiar categoría
+            searchQuery = "";
             document.querySelectorAll('.cat-btn').forEach(btn => {
                 btn.classList.toggle('active', btn.getAttribute('onclick').includes(`'${cat}'`));
             });
@@ -230,12 +252,15 @@
         function renderSAAC() {
             const grid = document.getElementById('pictogram-grid');
             grid.innerHTML = '';
-            let filtered = (activeFilter === 'all') ? vocabulary : 
-                           (activeFilter === 'favs') ? vocabulary.filter(v => favorites.includes(v.id)) :
-                           vocabulary.filter(v => v.cat === activeFilter);
             
-            if (activeFilter === 'favs' && filtered.length === 0) {
-                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color:#636e72;"><h3>Sin Favoritos</h3><p>Mantén pulsado un icono para agregarlo.</p></div>';
+            let filtered = vocabulary.filter(v => {
+                const matchesCat = (activeFilter === 'all') || (activeFilter === 'favs' ? favorites.includes(v.id) : v.cat === activeFilter);
+                const matchesSearch = v.id.toLowerCase().includes(searchQuery);
+                return matchesCat && matchesSearch;
+            });
+            
+            if (filtered.length === 0) {
+                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color:#999;">No hay resultados</div>';
                 return;
             }
 
@@ -263,7 +288,6 @@
             else favorites.push(id);
             localStorage.setItem('dotir_favs', JSON.stringify(favorites));
             renderSAAC();
-            if (navigator.vibrate) navigator.vibrate(50);
         }
 
         function updatePhraseDisplay() {
@@ -279,25 +303,18 @@
 
         function speakPhrase() { if (currentPhrase.length > 0) speak(currentPhrase.map(i => i.voice).join(' ')); }
         function clearPhrase() { currentPhrase = []; updatePhraseDisplay(); }
+        function accessSettings() { if (prompt("PIN:") === '1234') navigateTo('settings'); }
 
-        function accessSettings() {
-            if (prompt("PIN de acceso:") === '1234') navigateTo('settings');
-        }
-
-        // --- FUNCIONES DE MANTENIMIENTO ---
         async function downloadAllAssets() {
             const msg = document.getElementById('status-msg');
-            msg.innerText = "Descargando imágenes...";
-            try {
-                const cache = await caches.open('dotir-v1');
-                const urls = vocabulary.map(v => v.img);
-                await cache.addAll(['index.html', ...urls]);
-                msg.innerText = "✅ Todo descargado.";
-            } catch(e) { msg.innerText = "❌ Error de red."; }
+            msg.innerText = "Descargando...";
+            const cache = await caches.open('dotir-v1');
+            await cache.addAll(['index.html', ...vocabulary.map(v => v.img)]);
+            msg.innerText = "✅ Listo.";
         }
 
         async function clearAppData() {
-            if (confirm("¿Borrar caché y reiniciar?")) {
+            if (confirm("¿Borrar caché?")) {
                 const keys = await caches.keys();
                 await Promise.all(keys.map(k => caches.delete(k)));
                 location.reload();
