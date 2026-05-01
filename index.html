@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Dótir SAAC - v1.2.1 Producción</title>
+    <title>Dótir SAAC - v1.2.2 Búsqueda Global</title>
     <style>
         :root {
             --bg-app: #f0f4f7;
@@ -125,7 +125,7 @@
 
         <div class="bottom-nav">
             <button class="nav-circle-btn" onclick="navigateTo('menu')">🏠</button>
-            <input type="text" id="live-search" placeholder="Buscar ficha..." oninput="handleSearch(this.value)">
+            <input type="text" id="live-search" placeholder="Búsqueda global..." oninput="handleSearch(this.value)">
         </div>
     </section>
 
@@ -197,11 +197,17 @@
         if (isPhraseMode) renderSavedPhrases(); else renderGrid();
     }
 
+    // LÓGICA DE RENDERIZADO CON BÚSQUEDA GLOBAL
     function renderGrid() {
         const grid = document.getElementById('pictogram-grid'); grid.innerHTML = '';
         const filtered = vocabulary.filter(v => {
-            const matchesCat = (activeMode === 'all') || (activeMode === 'favs' ? favorites.includes(v.id) : v.cat === activeMode);
-            return matchesCat && v.id.toLowerCase().includes(searchQuery);
+            // Si hay texto en el buscador, ignoramos la pestaña (búsqueda global)
+            const matchesSearch = v.id.toLowerCase().includes(searchQuery);
+            if (searchQuery.length > 0) return matchesSearch;
+            
+            // Si no hay búsqueda, filtramos por la pestaña activa
+            return (activeMode === 'all') || 
+                   (activeMode === 'favs' ? favorites.includes(v.id) : v.cat === activeMode);
         });
 
         filtered.forEach(item => {
@@ -304,7 +310,11 @@
     function navigateTo(v) {
         document.querySelectorAll('.view').forEach(x => x.classList.add('hidden'));
         document.getElementById(`view-${v}`).classList.remove('hidden');
-        if (v === 'saac') setMode('favs');
+        if (v === 'saac') {
+            searchQuery = "";
+            document.getElementById('live-search').value = "";
+            setMode('favs');
+        }
     }
     function toggleFavorite(id) {
         favorites = favorites.includes(id) ? favorites.filter(f => f !== id) : [...favorites, id];
@@ -321,7 +331,15 @@
     }
     function speakPhrase() { speak(currentPhrase.map(i => i.id).join(' ')); }
     function toggleModal(id, show) { document.getElementById(id).classList.toggle('hidden', !show); }
-    function handleSearch(v) { searchQuery = v.toLowerCase(); renderGrid(); }
+    
+    function handleSearch(v) { 
+        searchQuery = v.toLowerCase(); 
+        // Si estamos en modo frases guardadas y buscamos, volvemos al grid automáticamente
+        if (activeMode === 'phrases' && searchQuery.length > 0) {
+            setMode('all');
+        }
+        renderGrid(); 
+    }
 
     window.onload = () => { loadVoices(); renderGrid(); };
 </script>
