@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Dótir SAAC - Live Search</title>
+    <title>Dótir SAAC - Smart Security</title>
     <style>
         :root {
             --bg-app: #f0f4f7;
@@ -12,87 +12,66 @@
             --cat-medical: #ef9a9a; --cat-social: #ffccbc; --cat-place: #d1d8e0;
         }
 
-        /* RESET Y ESTRUCTURA */
+        /* RESET Y ÁREA SEGURA iOS */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         html, body { 
             margin: 0; padding: 0; width: 100%; height: 100%;
             overflow: hidden; background: var(--bg-app);
             font-family: system-ui, -apple-system, sans-serif;
-            position: fixed; 
+            position: fixed;
         }
 
         #app-container { 
             display: flex; flex-direction: column; 
             height: 100vh; height: 100dvh; width: 100vw;
+            padding-top: env(safe-area-inset-top); 
             overflow: hidden;
         }
 
         .view { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
         .hidden { display: none !important; }
 
-        /* CABECERAS FIJAS */
-        .module-nav-bar { 
-            height: 50px; flex-shrink: 0;
-            background: white; display: flex; align-items: center; 
-            justify-content: space-between; padding: 0 15px; border-bottom: 1px solid #ddd; 
+        /* MODAL DE SEGURIDAD OPTIMIZADO */
+        #security-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); display: flex; align-items: center;
+            justify-content: center; z-index: 9999; backdrop-filter: blur(5px);
         }
-        
-        #phrase-section { 
-            height: 90px; flex-shrink: 0;
-            background: white; margin: 10px; border-radius: var(--radius); 
-            display: flex; align-items: center; padding: 0 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        .modal-content {
+            background: white; padding: 30px; border-radius: 25px;
+            text-align: center; width: 85%; max-width: 350px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
+        .modal-content input {
+            width: 100%; padding: 15px; font-size: 1.8rem; text-align: center;
+            border-radius: 15px; border: 2px solid #ddd; margin: 15px 0;
+            outline: none; background: #f9f9f9;
+        }
+        #hint-date { font-size: 0.85rem; color: #95a5a6; margin-bottom: 5px; font-weight: 500; }
 
-        #category-bar { 
-            height: 55px; flex-shrink: 0;
-            display: flex; gap: 8px; overflow-x: auto; padding: 5px 10px; 
-            scrollbar-width: none;
-        }
+        /* INTERFAZ TABLERO */
+        #phrase-section { height: 100px; flex-shrink: 0; background: white; margin: 10px; border-radius: var(--radius); display: flex; align-items: center; padding: 0 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); z-index: 10; }
+        #category-bar { height: 55px; flex-shrink: 0; display: flex; gap: 8px; overflow-x: auto; padding: 5px 10px; scrollbar-width: none; }
         #category-bar::-webkit-scrollbar { display: none; }
+        #pictogram-grid { flex: 1; overflow-y: auto !important; -webkit-overflow-scrolling: touch; display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; padding: 10px 15px 110px; background: var(--bg-app); }
 
-        /* BARRA DE BÚSQUEDA (NUEVA) */
-        #search-container {
-            padding: 0 10px 10px;
-            flex-shrink: 0;
+        /* NAVEGACIÓN Y BÚSQUEDA STICKY */
+        #sticky-bottom-nav {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);
+            padding: 12px 15px calc(12px + env(safe-area-inset-bottom));
+            display: flex; gap: 10px; border-top: 1px solid #ddd; z-index: 100;
         }
-        #live-search {
-            width: 100%;
-            padding: 12px 15px;
-            border-radius: 25px;
-            border: 2px solid #ddd;
-            font-size: 1rem;
-            outline: none;
-            transition: border-color 0.3s;
-        }
-        #live-search:focus { border-color: #4a90e2; }
-
-        /* GRID CON SCROLL */
-        #pictogram-grid { 
-            flex: 1; 
-            overflow-y: auto !important; 
-            -webkit-overflow-scrolling: touch; 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)); 
-            gap: 12px; 
-            padding: 5px 15px 120px; 
-            background: var(--bg-app);
-        }
+        #live-search { flex: 1; padding: 12px 20px; border-radius: 30px; border: 2px solid #ced6e0; font-size: 1rem; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05); }
+        .nav-circle-btn { width: 48px; height: 48px; border-radius: 50%; border: none; background: #2f3542; color: white; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; }
 
         /* TARJETAS */
-        .picto-card { 
-            position: relative; background: white; border-radius: var(--radius); 
-            padding: 10px; display: flex; flex-direction: column; 
-            align-items: center; justify-content: center; 
-            border-bottom: 4px solid rgba(0,0,0,0.1); 
-            min-height: 120px; cursor: pointer; user-select: none;
-        }
-        .picto-card img { width: 70%; height: auto; pointer-events: none; }
-        .picto-label { margin-top: 6px; font-weight: bold; font-size: 0.7rem; text-align: center; color: #333; }
-        .fav-star { position: absolute; top: 5px; right: 5px; color: #f1c40f; display: none; font-size: 1.1rem; }
-        .is-fav .fav-star { display: block; }
+        .picto-card { position: relative; background: white; border-radius: var(--radius); padding: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; border-bottom: 4px solid rgba(0,0,0,0.1); min-height: 125px; cursor: pointer; user-select: none; }
+        .picto-card img { width: 75%; height: auto; pointer-events: none; }
+        .picto-label { margin-top: 8px; font-weight: bold; font-size: 0.75rem; text-align: center; color: #2f3542; }
+        .is-fav::after { content: '⭐'; position: absolute; top: 8px; right: 8px; font-size: 1.1rem; color: #f1c40f; }
 
-        /* COLORES CATEGORÍAS */
+        /* CATEGORÍAS COLORES */
         .cat-subject { background-color: var(--cat-subject); }
         .cat-action { background-color: var(--cat-action); }
         .cat-noun { background-color: var(--cat-noun); }
@@ -100,51 +79,52 @@
         .cat-social { background-color: var(--cat-social); }
         .cat-place { background-color: var(--cat-place); }
 
-        .cat-btn { padding: 8px 15px; border-radius: 20px; border: 2px solid #ddd; background: white; font-weight: bold; cursor: pointer; white-space: nowrap; font-size: 0.75rem; }
+        .cat-btn { padding: 8px 18px; border-radius: 20px; border: 2px solid #ddd; background: white; font-weight: bold; cursor: pointer; white-space: nowrap; font-size: 0.8rem; }
         .cat-btn.active { background: #4a90e2; color: white; border-color: #4a90e2; }
 
-        /* CONTROLES FRASE */
-        #speak-btn { background: #55efc4; border: none; width: 45px; height: 45px; border-radius: 50%; color: white; font-size: 20px; cursor: pointer; }
-        #clear-btn { background: #ff7675; border: none; width: 45px; height: 45px; border-radius: 50%; color: white; font-size: 20px; cursor: pointer; }
-        .phrase-display { flex: 1; display: flex; gap: 5px; overflow-x: auto; align-items: center; height: 100%; }
-        .phrase-display img { height: 60px; width: 60px; object-fit: contain; }
+        /* BOTONES FRASE */
+        #speak-btn { background: #2ecc71; border: none; width: 50px; height: 50px; border-radius: 50%; color: white; font-size: 24px; cursor: pointer; }
+        #clear-btn { background: #e74c3c; border: none; width: 50px; height: 50px; border-radius: 50%; color: white; font-size: 24px; cursor: pointer; }
+        .phrase-display { flex: 1; display: flex; gap: 8px; overflow-x: auto; align-items: center; height: 100%; }
+        .phrase-display img { height: 70px; width: 70px; object-fit: contain; }
 
-        /* MENÚ Y AJUSTES */
-        .menu-item { background: white; padding: 25px; border-radius: 20px; margin: 10px 20px; display: flex; align-items: center; gap: 15px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .settings-card { background: white; padding: 20px; border-radius: 20px; margin: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .settings-btn { width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .btn-blue { background: #4a90e2; color: white; }
-        .btn-red { background: #ff7675; color: white; }
+        /* MENÚ */
+        .menu-item { background: white; padding: 25px; border-radius: 25px; margin: 15px 25px; display: flex; align-items: center; gap: 20px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
     </style>
 </head>
 <body>
     <div id="app-container">
         
+        <div id="security-modal" class="hidden">
+            <div class="modal-content">
+                <h3 style="margin-bottom:5px;">Acceso Restringido</h3>
+                <div id="hint-date"></div> <input type="number" id="pin-input" pattern="[0-9]*" inputmode="numeric" placeholder="Código">
+                <div style="display:flex; gap:10px;">
+                    <button onclick="closeSecurity()" style="flex:1; padding:12px; border-radius:10px; border:none; background:#eee; font-weight:bold;">Cancelar</button>
+                    <button onclick="verifySecurity()" style="flex:1; padding:12px; border-radius:10px; border:none; background:#2f3542; color:white; font-weight:bold;">Entrar</button>
+                </div>
+            </div>
+        </div>
+
         <section id="view-menu" class="view">
-            <header style="text-align:center; padding:40px 20px;">
-                <h1 style="margin:0; font-size:2.5rem;">Dótir</h1>
-                <p style="color:#636e72;">Comunicador Inteligente</p>
+            <header style="text-align: center; padding: 60px 20px 30px;">
+                <h1 style="margin:0; font-size:3.2rem; color: #2f3542; letter-spacing: -1px;">Dótir</h1>
+                <p style="color:#747d8c; font-weight: 500;">Comunicador Aumentativo</p>
             </header>
             <div class="menu-item" onclick="navigateTo('saac')">
-                <span style="font-size:2rem;">💬</span>
-                <div><b style="display:block;">Comunicador</b><span>Tablero con búsqueda</span></div>
+                <span style="font-size:2.5rem;">💬</span>
+                <div><b style="display:block; font-size: 1.2rem;">Tablero</b><span style="color:#a4b0be;">Comunicación abierta</span></div>
             </div>
-            <div class="menu-item" onclick="accessSettings()">
-                <span style="font-size:2rem;">⚙️</span>
-                <div><b style="display:block;">Ajustes</b><span>Configuración</span></div>
+            <div class="menu-item" onclick="openSecurity()">
+                <span style="font-size:2.5rem;">⚙️</span>
+                <div><b style="display:block; font-size: 1.2rem;">Ajustes</b><span style="color:#a4b0be;">Caché y configuración</span></div>
             </div>
         </section>
 
         <section id="view-saac" class="view hidden">
-            <nav class="module-nav-bar">
-                <button onclick="navigateTo('menu')" style="border:none; background:#eee; padding:8px 15px; border-radius:10px; font-weight:bold; cursor:pointer;">⬅</button>
-                <div id="status-voice" style="font-size: 0.7rem; color: #999;">Voz lista</div>
-                <div style="width:40px;"></div>
-            </nav>
-
             <header id="phrase-section">
                 <div id="current-phrase" class="phrase-display"></div>
-                <button id="speak-btn" onclick="speakPhrase()" style="margin-right:5px;">🔊</button>
+                <button id="speak-btn" onclick="speakPhrase()" style="margin-right:8px;">🔊</button>
                 <button id="clear-btn" onclick="clearPhrase()">✖</button>
             </header>
 
@@ -158,30 +138,31 @@
                 <button class="cat-btn" onclick="filterCategory('all')">TODO</button>
             </nav>
 
-            <div id="search-container">
-                <input type="text" id="live-search" placeholder="🔍 Buscar ficha..." oninput="handleSearch(this.value)">
-            </div>
-
             <main id="pictogram-grid"></main>
+
+            <div id="sticky-bottom-nav">
+                <button class="nav-circle-btn" onclick="navigateTo('menu')">🏠</button>
+                <input type="text" id="live-search" placeholder="Buscar ficha..." oninput="handleSearch(this.value)">
+                <div id="status-dot" style="width:12px; height:12px; background:#2ecc71; border-radius:50%; align-self:center;"></div>
+            </div>
         </section>
 
         <section id="view-settings" class="view hidden">
-            <nav class="module-nav-bar">
-                <button onclick="navigateTo('menu')" style="border:none; background:#eee; padding:8px 15px; border-radius:10px; font-weight:bold; cursor:pointer;">⬅ Volver</button>
-                <div style="font-weight:bold;">AJUSTES</div>
-                <div style="width:60px;"></div>
-            </nav>
-            <div class="settings-card">
-                <h3>Offline</h3>
-                <button class="settings-btn btn-blue" onclick="downloadAllAssets()">⬇ Descargar Imágenes</button>
-                <p id="status-msg" style="margin-top:10px;"></p>
-            </div>
-            <div class="settings-card">
-                <h3>Mantenimiento</h3>
-                <button class="settings-btn btn-red" onclick="clearAppData()">🗑 Limpiar Caché</button>
+            <div style="padding: 20px;">
+                <button onclick="navigateTo('menu')" style="padding:10px 20px; border-radius:15px; border:none; background:#2f3542; color:white; font-weight:bold;">⬅ Volver</button>
+                <h2 style="margin-top:20px;">Ajustes de Sistema</h2>
+                <div style="background:white; padding:20px; border-radius:20px; margin-top:20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                    <h4>Modo Sin Conexión</h4>
+                    <p style="font-size:0.8rem; color:#666;">Guarda todas las imágenes en la memoria del dispositivo.</p>
+                    <button onclick="downloadAllAssets()" style="width:100%; padding:15px; background:#4a90e2; color:white; border:none; border-radius:12px; font-weight:bold;">Descargar Todo</button>
+                    <p id="status-msg" style="margin-top:10px; font-size:0.8rem; font-weight: bold; color: #2ecc71;"></p>
+                </div>
+                <div style="background:white; padding:20px; border-radius:20px; margin-top:20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                    <h4>Mantenimiento</h4>
+                    <button onclick="clearAppData()" style="width:100%; padding:15px; background:#ff7675; color:white; border:none; border-radius:12px; font-weight:bold;">Borrar Datos y Caché</button>
+                </div>
             </div>
         </section>
-
     </div>
 
     <script>
@@ -207,12 +188,44 @@
             return "noun";
         }
 
+        // --- SEGURIDAD: CÓDIGO DINÁMICO (Día + Mes + Año) ---
+        function openSecurity() { 
+            const now = new Date();
+            const y = now.getFullYear();
+            const m = now.getMonth() + 1;
+            const d = now.getDate();
+            
+            // Mostramos la fecha como pista
+            document.getElementById('hint-date').innerText = `Hoy es: ${y} / ${m < 10 ? '0'+m : m} / ${d < 10 ? '0'+d : d}`;
+            
+            document.getElementById('security-modal').classList.remove('hidden');
+            document.getElementById('pin-input').focus();
+        }
+
+        function closeSecurity() { 
+            document.getElementById('security-modal').classList.add('hidden'); 
+            document.getElementById('pin-input').value = "";
+        }
+
+        function verifySecurity() {
+            const now = new Date();
+            const correctPin = now.getDate() + (now.getMonth() + 1) + now.getFullYear();
+            const inputVal = parseInt(document.getElementById('pin-input').value);
+            
+            if (inputVal === correctPin) {
+                closeSecurity();
+                navigateTo('settings');
+            } else {
+                alert("Código de seguridad incorrecto.");
+                closeSecurity();
+            }
+        }
+
         // --- TTS ---
         function loadVoices() {
             const voices = window.speechSynthesis.getVoices();
             selectedVoice = voices.find(v => v.lang.includes('es') && v.name.includes('Paulina')) || 
                             voices.find(v => v.lang.includes('es')) || voices[0];
-            if(selectedVoice) document.getElementById('status-voice').innerText = "Voz: " + selectedVoice.name;
         }
         window.speechSynthesis.onvoiceschanged = loadVoices;
         loadVoices();
@@ -226,23 +239,22 @@
             window.speechSynthesis.speak(msg);
         }
 
-        // --- BÚSQUEDA ---
-        function handleSearch(val) {
-            searchQuery = val.toLowerCase();
-            renderSAAC();
-        }
-
-        // --- RENDER ---
+        // --- NAVEGACIÓN Y RENDER ---
         function navigateTo(view) {
             document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
             document.getElementById(`view-${view}`).classList.remove('hidden');
             if (view === 'saac') renderSAAC();
         }
 
+        function handleSearch(val) {
+            searchQuery = val.toLowerCase();
+            renderSAAC();
+        }
+
         function filterCategory(cat) {
             activeFilter = cat;
-            document.getElementById('live-search').value = ""; // Limpiamos búsqueda al cambiar categoría
             searchQuery = "";
+            document.getElementById('live-search').value = "";
             document.querySelectorAll('.cat-btn').forEach(btn => {
                 btn.classList.toggle('active', btn.getAttribute('onclick').includes(`'${cat}'`));
             });
@@ -252,71 +264,60 @@
         function renderSAAC() {
             const grid = document.getElementById('pictogram-grid');
             grid.innerHTML = '';
-            
             let filtered = vocabulary.filter(v => {
                 const matchesCat = (activeFilter === 'all') || (activeFilter === 'favs' ? favorites.includes(v.id) : v.cat === activeFilter);
                 const matchesSearch = v.id.toLowerCase().includes(searchQuery);
                 return matchesCat && matchesSearch;
             });
             
-            if (filtered.length === 0) {
-                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color:#999;">No hay resultados</div>';
-                return;
-            }
-
             filtered.forEach(item => {
                 const card = document.createElement('div');
                 card.className = `picto-card cat-${item.cat} ${favorites.includes(item.id) ? 'is-fav' : ''}`;
-                card.innerHTML = `<div class="fav-star">⭐</div><img src="${item.img}" onerror="this.style.opacity='0.2'"><span class="picto-label">${item.label}</span>`;
-
-                let timer;
-                card.onmousedown = card.ontouchstart = () => timer = setTimeout(() => { toggleFavorite(item.id); timer = null; }, 800);
-                card.onmouseup = card.ontouchend = card.onmouseleave = () => clearTimeout(timer);
+                card.innerHTML = `<img src="${item.img}" onerror="this.style.opacity='0.2'"><span class="picto-label">${item.label}</span>`;
                 
-                card.onclick = () => {
-                    if (timer === null) return;
-                    currentPhrase.push(item);
-                    updatePhraseDisplay();
-                    speak(item.voice);
-                };
+                let t;
+                card.onmousedown = card.ontouchstart = () => t = setTimeout(() => { toggleFavorite(item.id); t = null; }, 800);
+                card.onmouseup = card.ontouchend = card.onmouseleave = () => clearTimeout(t);
+                card.onclick = () => { if(t) { currentPhrase.push(item); updatePhraseDisplay(); speak(item.voice); } };
                 grid.appendChild(card);
             });
         }
 
         function toggleFavorite(id) {
-            if (favorites.includes(id)) favorites = favorites.filter(f => f !== id);
-            else favorites.push(id);
+            favorites = favorites.includes(id) ? favorites.filter(f => f !== id) : [...favorites, id];
             localStorage.setItem('dotir_favs', JSON.stringify(favorites));
             renderSAAC();
         }
 
         function updatePhraseDisplay() {
-            const display = document.getElementById('current-phrase');
-            display.innerHTML = '';
-            currentPhrase.forEach((item, index) => {
-                const img = document.createElement('img');
-                img.src = item.img;
-                img.onclick = () => { currentPhrase.splice(index, 1); updatePhraseDisplay(); };
-                display.appendChild(img);
+            const d = document.getElementById('current-phrase');
+            d.innerHTML = '';
+            currentPhrase.forEach((it, i) => {
+                const im = document.createElement('img');
+                im.src = it.img;
+                im.onclick = () => { currentPhrase.splice(i, 1); updatePhraseDisplay(); };
+                d.appendChild(im);
             });
         }
 
-        function speakPhrase() { if (currentPhrase.length > 0) speak(currentPhrase.map(i => i.voice).join(' ')); }
+        function speakPhrase() { speak(currentPhrase.map(i => i.voice).join(' ')); }
         function clearPhrase() { currentPhrase = []; updatePhraseDisplay(); }
-        function accessSettings() { if (prompt("PIN:") === '1234') navigateTo('settings'); }
 
         async function downloadAllAssets() {
-            const msg = document.getElementById('status-msg');
-            msg.innerText = "Descargando...";
-            const cache = await caches.open('dotir-v1');
-            await cache.addAll(['index.html', ...vocabulary.map(v => v.img)]);
-            msg.innerText = "✅ Listo.";
+            const m = document.getElementById('status-msg');
+            m.innerText = "Descargando...";
+            try {
+                const c = await caches.open('dotir-v1');
+                await c.addAll(['index.html', ...vocabulary.map(v => v.img)]);
+                m.innerText = "✅ Descarga completa.";
+            } catch (e) { m.innerText = "⚠️ Error de red."; }
         }
 
         async function clearAppData() {
-            if (confirm("¿Borrar caché?")) {
-                const keys = await caches.keys();
-                await Promise.all(keys.map(k => caches.delete(k)));
+            if(confirm("¿Seguro que quieres borrar todo? Se perderán favoritos y caché.")) {
+                const ks = await caches.keys();
+                await Promise.all(ks.map(k => caches.delete(k)));
+                localStorage.clear();
                 location.reload();
             }
         }
