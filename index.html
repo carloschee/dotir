@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Dótir SAAC - v1.2.1</title>
+    <title>Dótir SAAC - v1.2.1 Producción</title>
     <style>
         :root {
             --bg-app: #f0f4f7;
@@ -19,7 +19,7 @@
         .view { display: flex; flex-direction: column; flex: 1; overflow: hidden; position: relative; }
         .hidden { display: none !important; }
 
-        /* CABECERA REESTRUCTURADA (UX MEJORADA) */
+        /* CABECERA COMUNICADOR */
         #phrase-section { 
             height: 110px; flex-shrink: 0; background: white; margin: 10px; border-radius: var(--radius); 
             display: flex; align-items: center; padding: 0 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); gap: 10px;
@@ -27,105 +27,123 @@
         .phrase-display { flex: 1; display: flex; gap: 8px; overflow-x: auto; align-items: center; height: 100%; }
         .phrase-display img { height: 65px; width: 65px; object-fit: contain; }
 
-        /* BOTONES CABECERA */
         .action-btn { border: none; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.1s; }
-        .action-btn:active { transform: scale(0.9); }
-        #clear-btn { background: #ff7675; width: 40px; height: 40px; font-size: 16px; opacity: 0.8; } /* Menos jerarquía */
-        #speak-btn { background: #2ecc71; width: 60px; height: 60px; font-size: 28px; box-shadow: 0 4px 10px rgba(46, 204, 113, 0.3); } /* Protagonista */
+        #clear-btn { background: #ff7675; width: 40px; height: 40px; font-size: 16px; }
+        #speak-btn { background: #2ecc71; width: 60px; height: 60px; font-size: 28px; }
         #save-phrase-btn { background: #4a90e2; width: 40px; height: 40px; font-size: 18px; }
 
-        /* CATEGORÍAS */
-        #category-bar { height: 55px; flex-shrink: 0; display: flex; gap: 8px; overflow-x: auto; padding: 5px 10px; scrollbar-width: none; }
-        .cat-btn { padding: 8px 18px; border-radius: 20px; border: 2px solid #ddd; background: white; font-weight: bold; font-size: 0.8rem; }
-        .cat-btn.active { background: #2f3542; color: white; border-color: #2f3542; }
-
-        /* GRID */
+        /* GRID Y CARDS */
         #pictogram-grid { flex: 1; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)); gap: 12px; padding: 10px 15px 100px; }
         .picto-card { position: relative; background: white; border-radius: var(--radius); padding: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; border-bottom: 4px solid rgba(0,0,0,0.1); min-height: 120px; user-select: none; }
-        .picto-card img { width: 70%; height: auto; pointer-events: none; }
-        .picto-label { margin-top: 8px; font-weight: bold; font-size: 0.75rem; text-align: center; color: #2f3542; }
+        .picto-card img { width: 70%; pointer-events: none; }
         .is-fav::after { content: '⭐'; position: absolute; top: 5px; right: 5px; color: #f1c40f; }
 
-        /* CRUD FRASES GUARDADAS */
-        #saved-phrases-container { padding: 15px; display: flex; flex-direction: column; gap: 10px; }
-        .saved-phrase-item { background: white; padding: 15px; border-radius: 15px; display: flex; align-items: center; gap: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        .saved-phrase-info { flex: 1; }
-        .saved-phrase-info b { display: block; color: #2f3542; font-size: 1rem; }
-        .saved-phrase-info small { color: #747d8c; }
-        .btn-del-phrase { background: none; border: none; font-size: 1.2rem; color: #ff7675; padding: 10px; }
+        /* MENÚ Y LISTAS */
+        .menu-item { background: white; padding: 25px; border-radius: 20px; margin: 10px 20px; display: flex; align-items: center; gap: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer; }
+        .saved-phrase-item { background: white; padding: 15px; border-radius: 15px; display: flex; align-items: center; gap: 15px; margin: 5px 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
 
         /* NAV INFERIOR */
-        .bottom-nav-container { position: absolute; bottom: 0; left: 0; right: 0; background: white; padding: 10px 15px; display: flex; gap: 10px; border-top: 1px solid #ddd; padding-bottom: calc(10px + env(safe-area-inset-bottom)); }
+        .bottom-nav { position: absolute; bottom: 0; left: 0; right: 0; background: white; padding: 10px 15px; display: flex; gap: 10px; border-top: 1px solid #ddd; padding-bottom: calc(10px + env(safe-area-inset-bottom)); }
         #live-search { flex: 1; padding: 0 20px; border-radius: 30px; border: 2px solid #eee; height: 44px; outline: none; }
         .nav-circle-btn { width: 44px; height: 44px; border-radius: 50%; border: none; background: #2f3542; color: white; display: flex; align-items: center; justify-content: center; }
 
-        /* MODALES */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(4px); }
-        .modal-box { background: white; padding: 25px; border-radius: 20px; width: 85%; max-width: 350px; text-align: center; }
-        .modal-box input { width: 100%; padding: 12px; margin: 15px 0; border-radius: 10px; border: 1px solid #ddd; }
+        /* MODALES Y SEGURIDAD */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 5000; backdrop-filter: blur(5px); }
+        .modal-box { background: white; padding: 25px; border-radius: 25px; width: 85%; max-width: 350px; text-align: center; }
+        .modal-box input { width: 100%; padding: 12px; margin: 15px 0; border-radius: 10px; border: 1px solid #ddd; text-align: center; font-size: 1.2rem; }
+        
+        .cat-btn { padding: 8px 15px; border-radius: 20px; border: 1px solid #ddd; background: white; font-weight: bold; font-size: 0.75rem; white-space: nowrap; }
+        .cat-btn.active { background: #2f3542; color: white; }
     </style>
 </head>
 <body>
 
 <div id="app-container">
 
+    <div id="modal-pin" class="modal-overlay hidden">
+        <div class="modal-box">
+            <h3>Acceso Administrador</h3>
+            <p id="pin-hint" style="font-size:0.8rem; color:#888;"></p>
+            <input type="number" id="input-pin" placeholder="••••" inputmode="numeric">
+            <div style="display:flex; gap:10px;">
+                <button onclick="toggleModal('modal-pin', false)" style="flex:1; padding:12px; border-radius:10px; border:none;">Cancelar</button>
+                <button onclick="verifyPin()" style="flex:1; padding:12px; border-radius:10px; border:none; background:#2f3542; color:white;">Entrar</button>
+            </div>
+        </div>
+    </div>
+
     <div id="modal-save" class="modal-overlay hidden">
         <div class="modal-box">
             <h3>Guardar Frase</h3>
-            <p>Escribe un nombre para esta frase:</p>
-            <input type="text" id="save-phrase-title" placeholder="Ej: Pedir agua">
+            <input type="text" id="save-phrase-title" placeholder="Título de la frase">
             <div style="display:flex; gap:10px;">
-                <button onclick="toggleModal('modal-save', false)" style="flex:1; padding:12px; border:none; border-radius:10px;">Cancelar</button>
-                <button onclick="confirmSavePhrase()" style="flex:1; padding:12px; border:none; border-radius:10px; background:#2ecc71; color:white;">Guardar</button>
+                <button onclick="toggleModal('modal-save', false)" style="flex:1; padding:12px; border-radius:10px; border:none;">Cancelar</button>
+                <button onclick="confirmSavePhrase()" style="flex:1; padding:12px; border-radius:10px; border:none; background:#2ecc71; color:white;">Guardar</button>
             </div>
         </div>
     </div>
 
     <section id="view-menu" class="view">
-        <header style="text-align: center; padding: 50px 20px 20px;">
-            <h1 style="margin:0; font-size:3rem; color: #2f3542;">Dótir</h1>
-            <p style="color:#747d8c;">v1.2.1 Producción</p>
+        <header style="text-align: center; padding: 60px 20px 30px;">
+            <h1 style="margin:0; font-size:3.5rem; color: #2f3542;">Dótir</h1>
+            <p style="color:#747d8c;">Versión de Producción 1.2.1</p>
         </header>
-        <div class="menu-item" style="background:white; padding:25px; border-radius:20px; margin:10px 20px; display:flex; align-items:center; gap:15px; box-shadow:0 4px 10px rgba(0,0,0,0.05);" onclick="navigateTo('saac')">
-            <span style="font-size:2rem;">💬</span>
-            <div><b>Comunicador</b><br><small>Tablero principal</small></div>
+        <div class="menu-item" onclick="navigateTo('saac')">
+            <span style="font-size:2.5rem;">💬</span>
+            <div><b>Comunicador</b><br><small>Tablero de pictogramas</small></div>
         </div>
-        <div class="menu-item" style="background:white; padding:25px; border-radius:20px; margin:10px 20px; display:flex; align-items:center; gap:15px; box-shadow:0 4px 10px rgba(0,0,0,0.05);" onclick="navigateTo('saved')">
-            <span style="font-size:2rem;">📚</span>
-            <div><b>Mis Frases</b><br><small>Frases guardadas</small></div>
+        <div class="menu-item" onclick="navigateTo('saved')">
+            <span style="font-size:2.5rem;">📚</span>
+            <div><b>Frases Guardadas</b><br><small>Gestor de frases rápidas</small></div>
+        </div>
+        <div class="menu-item" onclick="checkPinAccess()">
+            <span style="font-size:2.5rem;">⚙️</span>
+            <div><b>Ajustes</b><br><small>Configuración y Sistema</small></div>
         </div>
     </section>
 
     <section id="view-saac" class="view hidden">
         <header id="phrase-section">
-            <button id="clear-btn" class="action-btn" onclick="handleClearClick()" title="Doble toque para borrar">✖</button>
+            <button id="clear-btn" class="action-btn" onclick="handleClearClick()">✖</button>
             <div id="current-phrase" class="phrase-display"></div>
             <button id="save-phrase-btn" class="action-btn" onclick="openSaveModal()">💾</button>
             <button id="speak-btn" class="action-btn" onclick="speakPhrase()">🔊</button>
         </header>
-
-        <nav id="category-bar">
+        <nav id="category-bar" style="display:flex; overflow-x:auto; padding:5px 10px; gap:8px;">
             <button class="cat-btn active" onclick="filterCategory('favs')">⭐</button>
             <button class="cat-btn" onclick="filterCategory('social')">SOCIAL</button>
-            <button class="cat-btn" onclick="filterCategory('action')">ACCIONES</button>
             <button class="cat-btn" onclick="filterCategory('medical')">SALUD</button>
+            <button class="cat-btn" onclick="filterCategory('action')">ACCIONES</button>
             <button class="cat-btn" onclick="filterCategory('all')">TODO</button>
         </nav>
-
         <main id="pictogram-grid"></main>
-
-        <div class="bottom-nav-container">
+        <div class="bottom-nav">
             <button class="nav-circle-btn" onclick="navigateTo('menu')">🏠</button>
             <input type="text" id="live-search" placeholder="Buscar..." oninput="handleSearch(this.value)">
         </div>
     </section>
 
     <section id="view-saved" class="view hidden">
-        <header style="padding:20px; background:white; display:flex; align-items:center; gap:15px;">
-            <button onclick="navigateTo('menu')" style="border:none; background:none; font-size:1.5rem;">⬅</button>
-            <h2 style="margin:0;">Frases Guardadas</h2>
+        <header style="padding:20px; background:white; display:flex; align-items:center; gap:15px; border-bottom:1px solid #eee;">
+            <button onclick="navigateTo('menu')" class="nav-circle-btn">🏠</button>
+            <h2 style="margin:0;">Mis Frases</h2>
         </header>
-        <div id="saved-phrases-container" style="flex:1; overflow-y:auto;"></div>
+        <div id="saved-phrases-list" style="flex:1; overflow-y:auto; padding-top:10px;"></div>
+    </section>
+
+    <section id="view-settings" class="view hidden">
+        <header style="padding:20px; background:white; display:flex; align-items:center; gap:15px;">
+            <button onclick="navigateTo('menu')" class="nav-circle-btn">🏠</button>
+            <h2 style="margin:0;">Ajustes</h2>
+        </header>
+        <div style="padding:20px;">
+            <div class="menu-item" style="margin:10px 0;" onclick="downloadAssets()">
+                <span>📥</span><div><b>Modo Offline</b><br><small>Descargar imágenes</small></div>
+            </div>
+            <div class="menu-item" style="margin:10px 0; color:#e74c3c;" onclick="refreshApp()">
+                <span>🔄</span><div><b>Reiniciar Caché</b><br><small>Actualizar aplicación</small></div>
+            </div>
+        </div>
     </section>
 
 </div>
@@ -140,7 +158,7 @@
     let searchQuery = "";
     let selectedVoice = null;
 
-    // TTS
+    // --- TTS ---
     function loadVoices() {
         const voices = window.speechSynthesis.getVoices();
         selectedVoice = voices.find(v => v.lang === 'es-MX' || v.name.includes('Mexico')) || voices.find(v => v.lang.includes('es'));
@@ -156,9 +174,8 @@
         window.speechSynthesis.speak(msg);
     }
 
-    // LÓGICA CORE
+    // --- CORE ---
     const vocabulary = rawFiles.map(f => ({ id: f, label: f.toUpperCase(), img: `assets/pics/${f}.png`, cat: getCat(f) }));
-
     function getCat(n) {
         if (["bien", "mal", "hola", "gracias", "ayuda", "sí", "no"].includes(n)) return "social";
         if (["fiebre", "dolor", "tos", "curita", "hospital"].includes(n)) return "medical";
@@ -180,14 +197,10 @@
             card.innerHTML = `<img src="${item.img}"><span class="picto-label">${item.label}</span>`;
             
             let pressTimer, startTime, isLongPress = false;
-
             card.onmousedown = card.ontouchstart = () => {
                 isLongPress = false; startTime = Date.now();
-                pressTimer = setTimeout(() => {
-                    isLongPress = true; toggleFavorite(item.id);
-                }, 800);
+                pressTimer = setTimeout(() => { isLongPress = true; toggleFavorite(item.id); }, 800);
             };
-
             card.onmouseup = card.ontouchend = () => {
                 clearTimeout(pressTimer);
                 if (!isLongPress && (Date.now() - startTime > 150)) {
@@ -215,101 +228,98 @@
         });
     }
 
-    // UX: BORRAR CON SEGURIDAD
-    let clearClickCount = 0;
+    // --- UX BORRADO ---
+    let clearConfirm = false;
     function handleClearClick() {
         if (currentPhrase.length === 0) return;
-        clearClickCount++;
-        if (clearClickCount === 1) {
-            document.getElementById('clear-btn').style.background = "#d63031";
-            document.getElementById('clear-btn').innerText = "？";
-            setTimeout(() => { 
-                clearClickCount = 0; 
-                document.getElementById('clear-btn').style.background = "#ff7675";
-                document.getElementById('clear-btn').innerText = "✖";
-            }, 2000);
+        if (!clearConfirm) {
+            clearConfirm = true;
+            const btn = document.getElementById('clear-btn');
+            btn.style.background = "#d63031"; btn.innerText = "?";
+            setTimeout(() => { clearConfirm = false; btn.style.background = "#ff7675"; btn.innerText = "✖"; }, 2000);
         } else {
-            clearPhrase();
-            clearClickCount = 0;
+            currentPhrase = []; updatePhrase(); clearConfirm = false;
+            document.getElementById('clear-btn').style.background = "#ff7675";
+            document.getElementById('clear-btn').innerText = "✖";
         }
     }
 
-    function clearPhrase() { 
-        currentPhrase = []; updatePhrase(); 
-        document.getElementById('clear-btn').style.background = "#ff7675";
-        document.getElementById('clear-btn').innerText = "✖";
-    }
-
-    function speakPhrase() { speak(currentPhrase.map(i => i.id).join(' ')); }
-
-    // CRUD FRASES
-    function openSaveModal() {
-        if (currentPhrase.length === 0) return;
-        toggleModal('modal-save', true);
-    }
-
+    // --- GESTIÓN DE FRASES ---
+    function openSaveModal() { if (currentPhrase.length > 0) toggleModal('modal-save', true); }
     function confirmSavePhrase() {
-        const title = document.getElementById('save-phrase-title').value || "Frase sin título";
-        const phraseData = {
-            id: Date.now(),
-            title: title,
-            items: [...currentPhrase]
-        };
-        savedPhrases.push(phraseData);
+        const t = document.getElementById('save-phrase-title').value || "Frase nueva";
+        savedPhrases.push({ id: Date.now(), title: t, items: [...currentPhrase] });
         localStorage.setItem('dotir_phrases', JSON.stringify(savedPhrases));
         toggleModal('modal-save', false);
         document.getElementById('save-phrase-title').value = "";
-        alert("Frase guardada");
     }
 
-    function renderSavedPhrases() {
-        const container = document.getElementById('saved-phrases-container');
-        container.innerHTML = savedPhrases.length ? '' : '<p style="text-align:center; margin-top:40px; color:#999;">No tienes frases guardadas.</p>';
+    function renderSavedList() {
+        const container = document.getElementById('saved-phrases-list');
+        container.innerHTML = savedPhrases.length ? '' : '<p style="text-align:center; color:#999; margin-top:50px;">No hay frases guardadas.</p>';
         savedPhrases.forEach(p => {
-            const div = document.createElement('div');
-            div.className = 'saved-phrase-item';
-            div.innerHTML = `
-                <div class="saved-phrase-info" onclick="useSavedPhrase(${p.id})">
-                    <b>${p.title}</b>
-                    <small>${p.items.map(i => i.id).join(' ')}</small>
+            const item = document.createElement('div');
+            item.className = 'saved-phrase-item';
+            item.innerHTML = `
+                <div style="flex:1" onclick="loadSavedPhrase(${p.id})">
+                    <b>${p.title}</b><br><small>${p.items.map(i=>i.id).join(' ')}</small>
                 </div>
-                <button class="btn-del-phrase" onclick="deleteSavedPhrase(${p.id})">🗑️</button>
+                <button onclick="deletePhrase(${p.id})" style="border:none; background:none; font-size:1.2rem;">🗑️</button>
             `;
-            container.appendChild(div);
+            container.appendChild(item);
         });
     }
 
-    function useSavedPhrase(id) {
+    function loadSavedPhrase(id) {
         const p = savedPhrases.find(x => x.id === id);
         currentPhrase = [...p.items];
         navigateTo('saac');
         updatePhrase();
-        speakPhrase();
+        speak(p.items.map(i=>i.id).join(' '));
     }
 
-    function deleteSavedPhrase(id) {
-        if(confirm("¿Borrar esta frase?")) {
+    function deletePhrase(id) {
+        if (confirm("¿Eliminar frase?")) {
             savedPhrases = savedPhrases.filter(x => x.id !== id);
             localStorage.setItem('dotir_phrases', JSON.stringify(savedPhrases));
-            renderSavedPhrases();
+            renderSavedList();
         }
     }
 
-    // UTILIDADES
-    function navigateTo(v) {
-        document.querySelectorAll('.view').forEach(x => x.classList.add('hidden'));
-        document.getElementById(`view-${v}`).classList.remove('hidden');
-        if (v === 'saac') renderSAAC();
-        if (v === 'saved') renderSavedPhrases();
+    // --- SEGURIDAD ---
+    function checkPinAccess() {
+        const now = new Date();
+        document.getElementById('pin-hint').innerText = `PIN: ${now.getDate() + (now.getMonth() + 1) + now.getFullYear()}`;
+        toggleModal('modal-pin', true);
+    }
+    function verifyPin() {
+        const now = new Date();
+        const pin = now.getDate() + (now.getMonth() + 1) + now.getFullYear();
+        if (parseInt(document.getElementById('input-pin').value) === pin) {
+            toggleModal('modal-pin', false); navigateTo('settings');
+        } else { alert("PIN incorrecto"); }
+        document.getElementById('input-pin').value = "";
+    }
+
+    // --- NAVEGACIÓN ---
+    function navigateTo(view) {
+        document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
+        document.getElementById(`view-${view}`).classList.remove('hidden');
+        if (view === 'saac') renderSAAC();
+        if (view === 'saved') renderSavedList();
     }
 
     function toggleModal(id, show) { document.getElementById(id).classList.toggle('hidden', !show); }
+    function speakPhrase() { speak(currentPhrase.map(i => i.id).join(' ')); }
     function handleSearch(v) { searchQuery = v.toLowerCase(); renderSAAC(); }
     function filterCategory(c) { 
         activeFilter = c; 
-        document.querySelectorAll('.cat-btn').forEach(b => b.classList.toggle('active', b.onclick.toString().includes(`'${c}'`)));
+        document.querySelectorAll('.cat-btn').forEach(b => b.classList.toggle('active', b.innerText.toLowerCase().includes(c) || (c==='favs' && b.innerText==='⭐')));
         renderSAAC(); 
     }
+
+    async function downloadAssets() { alert("Iniciando descarga de pictogramas..."); }
+    async function refreshApp() { if(confirm("¿Actualizar?")) { location.reload(true); } }
 
     window.onload = () => { loadVoices(); renderSAAC(); };
 </script>
