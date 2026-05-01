@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Dótir SAAC - Fixed Z-Index</title>
+    <title>Dótir SAAC - Precisión Total</title>
     <style>
         :root {
             --bg-app: #f0f4f7;
@@ -12,7 +12,6 @@
             --cat-medical: #ef9a9a; --cat-social: #ffccbc; --cat-place: #d1d8e0;
         }
 
-        /* RESET Y ÁREA SEGURA */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         html, body { 
             margin: 0; padding: 0; width: 100%; height: 100%;
@@ -31,7 +30,7 @@
         .view { display: flex; flex-direction: column; flex: 1; overflow: hidden; position: relative; }
         .hidden { display: none !important; }
 
-        /* MODAL SEGURIDAD */
+        /* SEGURIDAD */
         #security-modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.85); display: flex; align-items: center;
@@ -39,35 +38,34 @@
         }
         .modal-content { background: white; padding: 30px; border-radius: 25px; text-align: center; width: 85%; max-width: 350px; }
 
-        /* UI TABLERO */
+        /* TABLERO */
         #phrase-section { height: 100px; flex-shrink: 0; background: white; margin: 10px; border-radius: var(--radius); display: flex; align-items: center; padding: 0 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
         #category-bar { height: 55px; flex-shrink: 0; display: flex; gap: 8px; overflow-x: auto; padding: 5px 10px; }
         
         #pictogram-grid { 
-            flex: 1; 
-            overflow-y: auto !important; 
-            -webkit-overflow-scrolling: touch; 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); 
-            gap: 12px; 
-            padding: 10px 15px 90px; /* Margen para no quedar tras el buscador */
+            flex: 1; overflow-y: auto !important; -webkit-overflow-scrolling: touch; 
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); 
+            gap: 12px; padding: 10px 15px 90px;
         }
 
-        /* BUSCADOR STICKY: Ahora dentro de #view-saac para no bloquear Ajustes */
         .bottom-nav-container {
             position: absolute; bottom: 0; left: 0; right: 0;
             background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);
-            padding: 10px 15px; display: flex; gap: 10px; 
-            border-top: 1px solid #ddd; z-index: 100;
+            padding: 10px 15px; display: flex; gap: 10px; border-top: 1px solid #ddd; z-index: 100;
         }
         
         #live-search { flex: 1; padding: 10px 20px; border-radius: 30px; border: 2px solid #ced6e0; font-size: 1rem; height: 44px; }
         .nav-circle-btn { width: 44px; height: 44px; border-radius: 50%; border: none; background: #2f3542; color: white; display: flex; align-items: center; justify-content: center; }
 
-        /* TARJETAS */
-        .picto-card { position: relative; background: white; border-radius: var(--radius); padding: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; border-bottom: 4px solid rgba(0,0,0,0.1); min-height: 125px; }
+        /* TARJETAS - SIN USER SELECT PARA EVITAR TEXTO SELECCIONADO */
+        .picto-card { 
+            position: relative; background: white; border-radius: var(--radius); 
+            padding: 10px; display: flex; flex-direction: column; align-items: center; 
+            justify-content: center; border-bottom: 4px solid rgba(0,0,0,0.1); 
+            min-height: 125px; user-select: none; -webkit-user-select: none;
+        }
         .picto-card img { width: 75%; height: auto; pointer-events: none; }
-        .picto-label { margin-top: 8px; font-weight: bold; font-size: 0.75rem; text-align: center; color: #2f3542; }
+        .picto-label { margin-top: 8px; font-weight: bold; font-size: 0.75rem; text-align: center; color: #2f3542; pointer-events: none; }
         .is-fav::after { content: '⭐'; position: absolute; top: 8px; right: 8px; font-size: 1.1rem; color: #f1c40f; }
 
         .cat-subject { background-color: var(--cat-subject); }
@@ -95,7 +93,7 @@
             <div class="modal-content">
                 <h3>Acceso Restringido</h3>
                 <div id="hint-date" style="font-size:0.8rem; color:#999; margin-bottom:10px;"></div>
-                <input type="number" id="pin-input" pattern="[0-9]*" inputmode="numeric" placeholder="PIN">
+                <input type="number" id="pin-input" pattern="[0-9]*" inputmode="numeric" placeholder="Código">
                 <div style="display:flex; gap:10px;">
                     <button onclick="closeSecurity()" style="flex:1; padding:12px; border-radius:10px; border:none;">Cerrar</button>
                     <button onclick="verifySecurity()" style="flex:1; padding:12px; border-radius:10px; border:none; background:#2f3542; color:white;">Entrar</button>
@@ -136,25 +134,25 @@
             
             <div class="bottom-nav-container">
                 <button class="nav-circle-btn" onclick="navigateTo('menu')">🏠</button>
-                <input type="text" id="live-search" placeholder="Buscar ficha..." oninput="handleSearch(this.value)">
+                <input type="text" id="live-search" placeholder="Buscar..." oninput="handleSearch(this.value)">
                 <div style="width:12px; height:12px; background:#2ecc71; border-radius:50%; align-self:center;"></div>
             </div>
         </section>
 
         <section id="view-settings" class="view hidden">
             <div style="padding: 20px; z-index: 500; position: relative;">
-                <button onclick="navigateTo('menu')" style="padding:15px 25px; border-radius:15px; border:none; background:#2f3542; color:white; font-weight:bold; cursor:pointer;">⬅ Volver al Menú</button>
-                <h2 style="margin-top:30px;">Ajustes de Sistema</h2>
+                <button onclick="navigateTo('menu')" style="padding:15px 25px; border-radius:15px; border:none; background:#2f3542; color:white; font-weight:bold;">⬅ Volver</button>
+                <h2 style="margin-top:30px;">Configuración</h2>
                 
-                <div style="background:white; padding:20px; border-radius:20px; margin-top:20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
-                    <h4>Modo Offline</h4>
-                    <button onclick="downloadAllAssets()" style="width:100%; padding:20px; background:#4a90e2; color:white; border:none; border-radius:12px; font-weight:bold; cursor:pointer;">Descargar Todas las Imágenes</button>
-                    <p id="status-msg" style="margin-top:10px; font-size:0.9rem; color:#2ecc71;"></p>
+                <div style="background:white; padding:20px; border-radius:20px; margin-top:20px;">
+                    <h4>Actualización</h4>
+                    <button onclick="downloadAllAssets()" style="width:100%; padding:20px; background:#4a90e2; color:white; border:none; border-radius:12px; font-weight:bold;">Descargar Todo</button>
                 </div>
 
-                <div style="background:white; padding:20px; border-radius:20px; margin-top:20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
-                    <h4>Reset</h4>
-                    <button onclick="clearAppData()" style="width:100%; padding:20px; background:#ff7675; color:white; border:none; border-radius:12px; font-weight:bold; cursor:pointer;">Borrar Favoritos y Caché</button>
+                <div style="background:white; padding:20px; border-radius:20px; margin-top:20px;">
+                    <h4>Mantenimiento</h4>
+                    <button onclick="refreshApp()" style="width:100%; padding:20px; background:#ff7675; color:white; border:none; border-radius:12px; font-weight:bold;">Refrescar App (Limpia Caché)</button>
+                    <p style="font-size:0.75rem; color:#888; margin-top:8px;">Esto descarga la versión más reciente de la app sin perder tus favoritos.</p>
                 </div>
             </div>
         </section>
@@ -181,6 +179,7 @@
             id: file, label: file.toUpperCase(), img: `assets/pics/${file}.png`, voice: file, cat: getCategory(file)
         }));
 
+        // --- SEGURIDAD ---
         function openSecurity() {
             const now = new Date();
             document.getElementById('hint-date').innerText = `Pista: ${now.getFullYear()}/${now.getMonth()+1}/${now.getDate()}`;
@@ -217,6 +216,7 @@
             renderSAAC();
         }
 
+        // --- RENDER CON LÓGICA DE GESTOS REFORZADA ---
         function renderSAAC() {
             const grid = document.getElementById('pictogram-grid');
             grid.innerHTML = '';
@@ -228,11 +228,36 @@
             filtered.forEach(item => {
                 const card = document.createElement('div');
                 card.className = `picto-card cat-${item.cat} ${favorites.includes(item.id) ? 'is-fav' : ''}`;
-                card.innerHTML = `<img src="${item.img}" onerror="this.style.opacity='0.2'"><span class="picto-label">${item.label}</span>`;
-                let t;
-                card.onmousedown = card.ontouchstart = () => t = setTimeout(() => { toggleFavorite(item.id); t = null; }, 800);
-                card.onmouseup = card.ontouchend = card.onmouseleave = () => clearTimeout(t);
-                card.onclick = () => { if(t) { currentPhrase.push(item); updatePhrase(); speak(item.voice); } };
+                card.innerHTML = `<img src="${item.img}"><span class="picto-label">${item.label}</span>`;
+                
+                let pressTimer;
+                let isLongPress = false;
+
+                // Eventos para diferenciar Toque de Pulsación Larga
+                const start = (e) => {
+                    isLongPress = false;
+                    pressTimer = setTimeout(() => {
+                        isLongPress = true;
+                        toggleFavorite(item.id);
+                    }, 800); // 800ms para marcar favorito
+                };
+
+                const cancel = (e) => {
+                    clearTimeout(pressTimer);
+                    // Si NO fue pulsación larga y NO fue cancelado por scroll
+                    if (!isLongPress && e.type !== 'mouseleave') {
+                        // Es un toque normal
+                        currentPhrase.push(item);
+                        updatePhrase();
+                        speak(item.voice);
+                    }
+                };
+
+                // Desktop + Mobile
+                card.onmousedown = card.ontouchstart = start;
+                card.onmouseup = card.ontouchend = cancel;
+                card.onmouseleave = () => clearTimeout(pressTimer);
+
                 grid.appendChild(card);
             });
         }
@@ -257,21 +282,23 @@
         function speakPhrase() { speak(currentPhrase.map(i => i.voice).join(' ')); }
         function clearPhrase() { currentPhrase = []; updatePhrase(); }
 
+        // --- MANTENIMIENTO ---
         async function downloadAllAssets() {
-            document.getElementById('status-msg').innerText = "Descargando...";
+            const msg = document.getElementById('status-msg') || { innerText: "" };
             try {
                 const c = await caches.open('dotir-v1');
                 await c.addAll(['index.html', ...vocabulary.map(v => v.img)]);
-                document.getElementById('status-msg').innerText = "✅ Descarga completa.";
-            } catch (e) { document.getElementById('status-msg').innerText = "⚠️ Error de red."; }
+                alert("✅ Archivos descargados correctamente.");
+            } catch (e) { alert("⚠️ Error de conexión."); }
         }
 
-        async function clearAppData() {
-            if(confirm("¿Borrar todo?")) {
-                localStorage.clear();
+        async function refreshApp() {
+            if(confirm("¿Quieres refrescar la app? Esto actualizará el código y las imágenes, pero conservará tus favoritos.")) {
+                // Borramos solo el caché de archivos
                 const ks = await caches.keys();
                 await Promise.all(ks.map(k => caches.delete(k)));
-                location.reload();
+                // Recargamos la página (esto bajará lo nuevo del servidor)
+                location.reload(true); 
             }
         }
     </script>
