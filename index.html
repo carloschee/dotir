@@ -3,16 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Dótir SAAC - Versión Final</title>
+    <title>Dótir SAAC - Producción v1.2</title>
     <style>
         :root {
             --bg-app: #f0f4f7;
             --radius: 18px;
             --cat-subject: #ffeb3b; --cat-action: #c5e1a5; --cat-noun: #90caf9;
             --cat-medical: #ef9a9a; --cat-social: #ffccbc; --cat-place: #d1d8e0;
+            --nav-bg: rgba(255, 255, 255, 0.98);
         }
 
-        /* RESET Y ESTRUCTURA */
+        /* ESTRUCTURA INMERSIVA */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         html, body { 
             margin: 0; padding: 0; width: 100%; height: 100%;
@@ -25,66 +26,74 @@
             display: flex; flex-direction: column; 
             height: 100dvh; width: 100vw;
             padding-top: env(safe-area-inset-top);
-            overflow: hidden;
         }
 
         .view { display: flex; flex-direction: column; flex: 1; overflow: hidden; position: relative; }
         .hidden { display: none !important; }
 
+        /* CABECERA Y FRASES */
+        #phrase-section { 
+            height: 100px; flex-shrink: 0; background: white; 
+            margin: 10px 15px; border-radius: var(--radius); 
+            display: flex; align-items: center; padding: 0 10px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
+        }
+        .phrase-display { flex: 1; display: flex; gap: 8px; overflow-x: auto; align-items: center; height: 100%; }
+        .phrase-display img { height: 70px; width: 70px; object-fit: contain; border-radius: 8px; }
+
+        /* CATEGORÍAS */
+        #category-bar { height: 55px; flex-shrink: 0; display: flex; gap: 8px; overflow-x: auto; padding: 5px 15px; scrollbar-width: none; }
+        #category-bar::-webkit-scrollbar { display: none; }
+        .cat-btn { 
+            padding: 0 15px; height: 40px; border-radius: 12px; border: 1.5px solid #ddd; 
+            background: white; font-weight: bold; font-size: 0.75rem; color: #555;
+            display: flex; align-items: center; justify-content: center; white-space: nowrap;
+        }
+        .cat-btn.active { background: #4a90e2; color: white; border-color: #4a90e2; }
+
+        /* GRID Y FICHAS */
+        #pictogram-grid { 
+            flex: 1; overflow-y: auto !important; -webkit-overflow-scrolling: touch; 
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)); 
+            gap: 12px; padding: 10px 15px 140px; 
+        }
+        .picto-card { 
+            position: relative; background: white; border-radius: var(--radius); 
+            padding: 10px; display: flex; flex-direction: column; align-items: center; 
+            justify-content: space-between; border-bottom: 4px solid rgba(0,0,0,0.05); 
+            aspect-ratio: 1 / 1.1; overflow: hidden; transition: transform 0.1s;
+        }
+        .picto-card:active { transform: scale(0.96); opacity: 0.8; }
+        .picto-card img { max-width: 80%; max-height: 70%; object-fit: contain; pointer-events: none; }
+        .picto-label { font-weight: bold; font-size: 0.7rem; color: #2f3542; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; }
+
+        /* NAVEGACIÓN INFERIOR (ÁREA SEGURA) */
+        .bottom-nav-wrapper {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            background: var(--nav-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(0,0,0,0.08);
+            padding-bottom: env(safe-area-inset-bottom); 
+            z-index: 1000;
+        }
+        .nav-main-row { display: flex; align-items: center; gap: 10px; padding: 12px 15px; }
+        #live-search { flex: 1; padding: 0 15px; border-radius: 20px; border: 1px solid #ddd; height: 44px; outline: none; background: #fdfdfd; }
+        .nav-circle-btn { width: 44px; height: 44px; border-radius: 50%; border: none; background: #34495e; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+        .safe-area-status { height: 5px; width: 50px; background: #2ecc71; margin: 2px auto 8px; border-radius: 10px; opacity: 0.8; }
+
         /* MODAL SEGURIDAD */
         #security-modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.85); display: flex; align-items: center;
-            justify-content: center; z-index: 10000; backdrop-filter: blur(5px);
+            justify-content: center; z-index: 10000; backdrop-filter: blur(8px);
         }
-        .modal-content { background: white; padding: 30px; border-radius: 25px; text-align: center; width: 85%; max-width: 350px; }
-        .modal-content input { width: 100%; padding: 15px; font-size: 1.5rem; text-align: center; border-radius: 12px; border: 2px solid #ddd; margin: 15px 0; }
+        .modal-content { background: white; padding: 35px; border-radius: 30px; text-align: center; width: 90%; max-width: 380px; }
+        .modal-content input { width: 100%; padding: 15px; font-size: 1.8rem; text-align: center; border-radius: 15px; border: 2px solid #eee; margin: 20px 0; outline: none; }
 
-        /* TABLERO Y FRASES */
-        #phrase-section { height: 100px; flex-shrink: 0; background: white; margin: 10px; border-radius: var(--radius); display: flex; align-items: center; padding: 0 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-        .phrase-display { flex: 1; display: flex; gap: 8px; overflow-x: auto; align-items: center; height: 100%; }
-        .phrase-display img { height: 70px; width: 70px; object-fit: contain; }
-
-        /* CATEGORÍAS */
-        #category-bar { height: 55px; flex-shrink: 0; display: flex; gap: 8px; overflow-x: auto; padding: 5px 10px; scrollbar-width: none; }
-        #category-bar::-webkit-scrollbar { display: none; }
-        .cat-btn { padding: 8px 18px; border-radius: 20px; border: 2px solid #ddd; background: white; font-weight: bold; cursor: pointer; white-space: nowrap; font-size: 0.8rem; }
-        .cat-btn.active { background: #4a90e2; color: white; border-color: #4a90e2; }
-
-        /* GRID DE PICTOGRAMAS */
-        #pictogram-grid { 
-            flex: 1; overflow-y: auto !important; -webkit-overflow-scrolling: touch; 
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); 
-            gap: 12px; padding: 10px 15px 90px;
-        }
-
-        /* TARJETAS Y ANIMACIONES */
-        .picto-card { 
-            position: relative; background: white; border-radius: var(--radius); 
-            padding: 10px; display: flex; flex-direction: column; align-items: center; 
-            justify-content: center; border-bottom: 4px solid rgba(0,0,0,0.1); 
-            min-height: 125px; user-select: none; -webkit-user-select: none;
-            transition: transform 0.1s ease, opacity 0.1s ease;
-        }
-        .picto-card:active { opacity: 0.7; transform: scale(0.95); }
-        .picto-card img { width: 75%; height: auto; pointer-events: none; }
-        .picto-label { margin-top: 8px; font-weight: bold; font-size: 0.75rem; text-align: center; color: #2f3542; pointer-events: none; }
+        /* ESTADOS Y COLORES */
+        .is-fav::after { content: '⭐'; position: absolute; top: 6px; right: 6px; font-size: 1rem; color: #f1c40f; }
+        .fav-pop { animation: favPop 0.3s ease; }
+        @keyframes favPop { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
         
-        /* INDICADOR FAVORITO */
-        .is-fav::after { content: '⭐'; position: absolute; top: 8px; right: 8px; font-size: 1.1rem; color: #f1c40f; }
-        .fav-pop { animation: favPopAnim 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        @keyframes favPopAnim { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
-
-        /* BUSCADOR Y NAVEGACIÓN INFERIOR */
-        .bottom-nav-container {
-            position: absolute; bottom: 0; left: 0; right: 0;
-            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);
-            padding: 10px 15px; display: flex; gap: 10px; border-top: 1px solid #ddd; z-index: 100;
-        }
-        #live-search { flex: 1; padding: 10px 20px; border-radius: 30px; border: 2px solid #ced6e0; font-size: 1rem; height: 44px; outline: none; }
-        .nav-circle-btn { width: 44px; height: 44px; border-radius: 50%; border: none; background: #2f3542; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
-
-        /* COLORES CATEGORÍAS */
         .cat-subject { background-color: var(--cat-subject); }
         .cat-action { background-color: var(--cat-action); }
         .cat-noun { background-color: var(--cat-noun); }
@@ -92,26 +101,22 @@
         .cat-social { background-color: var(--cat-social); }
         .cat-place { background-color: var(--cat-place); }
 
-        /* BOTONES DE ACCIÓN */
-        #speak-btn { background: #2ecc71; border: none; width: 48px; height: 48px; border-radius: 50%; color: white; font-size: 22px; margin-left: 5px; }
+        #speak-btn { background: #2ecc71; border: none; width: 48px; height: 48px; border-radius: 50%; color: white; font-size: 22px; }
         #clear-btn { background: #e74c3c; border: none; width: 48px; height: 48px; border-radius: 50%; color: white; font-size: 22px; margin-left: 5px; }
-
-        /* MENÚ */
         .menu-item { background: white; padding: 25px; border-radius: 25px; margin: 15px 25px; display: flex; align-items: center; gap: 20px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
     </style>
 </head>
 <body>
 
     <div id="app-container">
-        
         <div id="security-modal" class="hidden">
             <div class="modal-content">
                 <h3>Acceso Restringido</h3>
-                <div id="hint-date" style="font-size:0.8rem; color:#999; margin-bottom:10px;"></div>
-                <input type="number" id="pin-input" pattern="[0-9]*" inputmode="numeric" placeholder="PIN">
+                <p id="hint-date" style="color:#888; font-size:0.9rem;"></p>
+                <input type="number" id="pin-input" pattern="[0-9]*" inputmode="numeric" placeholder="••••">
                 <div style="display:flex; gap:10px;">
-                    <button onclick="closeSecurity()" style="flex:1; padding:12px; border-radius:10px; border:none; background:#eee;">Cancelar</button>
-                    <button onclick="verifySecurity()" style="flex:1; padding:12px; border-radius:10px; border:none; background:#2f3542; color:white;">Entrar</button>
+                    <button onclick="closeSecurity()" style="flex:1; padding:15px; border-radius:12px; border:none; background:#eee;">Cerrar</button>
+                    <button onclick="verifySecurity()" style="flex:1; padding:15px; border-radius:12px; border:none; background:#2f3542; color:white;">Entrar</button>
                 </div>
             </div>
         </div>
@@ -119,15 +124,15 @@
         <section id="view-menu" class="view">
             <header style="text-align: center; padding: 60px 20px 30px;">
                 <h1 style="margin:0; font-size:3.5rem; color: #2f3542;">Dótir</h1>
-                <p style="color:#747d8c;">Comunicador Aumentativo</p>
+                <p style="color:#747d8c;">v1.2 Producción</p>
             </header>
             <div class="menu-item" onclick="navigateTo('saac')">
                 <span style="font-size:2.5rem;">💬</span>
-                <div><b>Tablero de Comunicación</b><br><small>Toca para hablar</small></div>
+                <div><b>Tablero Comunicador</b><br><small>Toca pictogramas para hablar</small></div>
             </div>
             <div class="menu-item" onclick="openSecurity()">
                 <span style="font-size:2.5rem;">⚙️</span>
-                <div><b>Configuración</b><br><small>Ajustes del sistema</small></div>
+                <div><b>Ajustes</b><br><small>Configuración técnica</small></div>
             </div>
         </section>
 
@@ -139,93 +144,137 @@
             </header>
 
             <nav id="category-bar">
-                <button class="cat-btn active" onclick="filterCategory('favs')">⭐</button>
+                <button class="cat-btn active" onclick="filterCategory('all')">TODO</button>
+                <button class="cat-btn" onclick="filterCategory('favs')">⭐ FAVORITOS</button>
                 <button class="cat-btn" onclick="filterCategory('social')">SOCIAL</button>
                 <button class="cat-btn" onclick="filterCategory('medical')">SALUD</button>
                 <button class="cat-btn" onclick="filterCategory('action')">ACCIONES</button>
-                <button class="cat-btn" onclick="filterCategory('noun')">OBJETOS</button>
                 <button class="cat-btn" onclick="filterCategory('place')">LUGARES</button>
-                <button class="cat-btn" onclick="filterCategory('all')">TODO</button>
             </nav>
 
             <main id="pictogram-grid"></main>
 
-            <div class="bottom-nav-container">
-                <button class="nav-circle-btn" onclick="navigateTo('menu')">🏠</button>
-                <input type="text" id="live-search" placeholder="Buscar..." oninput="handleSearch(this.value)">
-                <div style="width:12px; height:12px; background:#2ecc71; border-radius:50%; align-self:center;"></div>
+            <div class="bottom-nav-wrapper">
+                <div class="nav-main-row">
+                    <button class="nav-circle-btn" onclick="navigateTo('menu')">🏠</button>
+                    <input type="text" id="live-search" placeholder="Buscar..." oninput="handleSearch(this.value)">
+                </div>
+                <div class="safe-area-status"></div>
             </div>
         </section>
 
         <section id="view-settings" class="view hidden">
             <div style="padding: 20px;">
-                <button onclick="navigateTo('menu')" style="padding:15px 25px; border-radius:15px; border:none; background:#2f3542; color:white; font-weight:bold;">⬅ Volver</button>
-                
-                <h2 style="margin-top:30px;">Ajustes</h2>
-                
-                <div style="background:white; padding:20px; border-radius:20px; margin-top:20px;">
-                    <h4>Modo Offline</h4>
-                    <button onclick="downloadAllAssets()" style="width:100%; padding:20px; background:#4a90e2; color:white; border:none; border-radius:12px; font-weight:bold;">Descargar Todas las Imágenes</button>
-                    <p style="font-size:0.8rem; color:#666; margin-top:10px;">Descarga los archivos para usar la app sin internet.</p>
+                <button onclick="navigateTo('menu')" style="padding:12px 20px; border-radius:10px; border:none; background:#2f3542; color:white;">⬅ Volver</button>
+                <h2 style="margin-top:30px;">Sistema</h2>
+                <div style="background:white; padding:20px; border-radius:20px; margin-top:15px;">
+                    <h4>Offline</h4>
+                    <button onclick="downloadAllAssets()" style="width:100%; padding:15px; background:#4a90e2; color:white; border:none; border-radius:10px; font-weight:bold;">Descargar Todo</button>
                 </div>
-
-                <div style="background:white; padding:20px; border-radius:20px; margin-top:20px;">
-                    <h4>Sistema</h4>
-                    <button onclick="refreshApp()" style="width:100%; padding:20px; background:#ff7675; color:white; border:none; border-radius:12px; font-weight:bold;">Refrescar App (Limpia Caché)</button>
-                    <p style="font-size:0.8rem; color:#666; margin-top:10px;">Actualiza el código y las fotos. <b>Tus favoritos no se borrarán.</b></p>
+                <div style="background:white; padding:20px; border-radius:20px; margin-top:15px;">
+                    <h4>Caché</h4>
+                    <button onclick="refreshApp()" style="width:100%; padding:15px; background:#ff7675; color:white; border:none; border-radius:10px; font-weight:bold;">Refrescar App</button>
                 </div>
             </div>
         </section>
-
     </div>
 
     <script>
-        // 1. DATOS Y ESTADO
         const rawFiles = ["abeja", "abrazo", "adiós", "ahora", "antes", "autobús", "avión", "ayuda", "bicicleta", "bien", "brazo", "caballo", "cabeza", "cansado", "caracol", "coche", "curita", "después", "dibujar", "diente", "dolor", "enfadado", "escuchar", "escuela", "espalda", "estomago", "farola", "fiebre", "flor", "frutería", "garganta", "gato", "gracias", "hola", "hospital", "jarabe", "kiosco", "lavar", "lluvia", "mal", "mano", "mareo", "mariposa", "miedo", "más", "no quiero", "no", "oler", "oído", "panadería", "papelera", "parque", "paso de cebra", "pastilla", "perro", "pez", "pie", "pierna", "poco", "por favor", "pájaro", "semáforo", "Sol", "solicitar permiso", "suave", "sí", "termómetro", "tocar", "tos", "tren", "triste", "vaca", "vacuna", "ver", "vómito", "yo quiero", "árbol"];
         
         let favorites = JSON.parse(localStorage.getItem('dotir_favs')) || [];
         let currentPhrase = [];
-        let activeFilter = 'favs';
+        let activeFilter = 'all';
         let searchQuery = "";
-
-        // 2. OPTIMIZACIÓN TTS (MEXICO/LATAM)
         let selectedVoice = null;
+
         function loadVoices() {
             const voices = window.speechSynthesis.getVoices();
-            selectedVoice = voices.find(v => v.lang === 'es-MX' || v.name.toLowerCase().includes('mexico')) ||
-                            voices.find(v => v.lang === 'es-US' || v.name.toLowerCase().includes('latin')) ||
-                            voices.find(v => v.lang.includes('es'));
+            selectedVoice = voices.find(v => v.lang === 'es-MX' || v.name.includes('Mexico')) || voices.find(v => v.lang.includes('es'));
         }
         window.speechSynthesis.onvoiceschanged = loadVoices;
-        loadVoices();
 
         function speak(text) {
             if (!text) return;
             window.speechSynthesis.cancel();
             const msg = new SpeechSynthesisUtterance(text);
             if (selectedVoice) msg.voice = selectedVoice;
-            msg.lang = 'es-MX'; 
-            msg.rate = 0.95; 
-            msg.pitch = 1.0;
+            msg.lang = 'es-MX';
+            msg.rate = 0.95;
             window.speechSynthesis.speak(msg);
         }
 
-        // 3. LÓGICA DE CATEGORÍAS
-        function getCategory(name) {
-            const n = name.toLowerCase();
-            if (n === "yo quiero") return "subject";
-            if (["dibujar", "lavar", "oler", "tocar", "ver", "escuchar", "solicitar permiso", "abrazo"].includes(n)) return "action";
-            if (["cabeza", "fiebre", "dolor", "vómito", "tos", "mareo", "garganta", "brazo", "pierna", "estomago", "oído", "pie", "mano", "espalda", "diente", "curita", "pastilla", "jarabe", "vacuna", "termómetro"].includes(n)) return "medical";
-            if (["bien", "mal", "gracias", "hola", "adiós", "ayuda", "por favor", "sí", "no", "no quiero", "triste", "enfadado", "cansado", "miedo", "suave"].includes(n)) return "social";
-            if (["hospital", "escuela", "frutería", "kiosco", "panadería", "parque", "paso de cebra", "farola", "papelera", "semáforo"].includes(n)) return "place";
+        function getCategory(n) {
+            const val = n.toLowerCase();
+            if (val === "yo quiero") return "subject";
+            if (["dibujar", "lavar", "oler", "tocar", "ver", "escuchar", "abrazo"].includes(val)) return "action";
+            if (["fiebre", "dolor", "vómito", "tos", "mareo", "garganta", "curita", "pastilla", "termómetro"].includes(val)) return "medical";
+            if (["bien", "mal", "gracias", "hola", "adiós", "ayuda", "sí", "no", "por favor"].includes(val)) return "social";
+            if (["hospital", "escuela", "parque", "panadería", "frutería"].includes(val)) return "place";
             return "noun";
         }
 
-        const vocabulary = rawFiles.map(file => ({
-            id: file, label: file.toUpperCase(), img: `assets/pics/${file}.png`, voice: file, cat: getCategory(file)
-        }));
+        const vocabulary = rawFiles.map(file => ({ id: file, label: file.toUpperCase(), img: `assets/pics/${file}.png`, cat: getCategory(file) }));
 
-        // 4. SEGURIDAD Y NAVEGACIÓN
+        function renderSAAC() {
+            const grid = document.getElementById('pictogram-grid');
+            grid.innerHTML = '';
+            const filtered = vocabulary.filter(v => {
+                const matchesCat = (activeFilter === 'all') || (activeFilter === 'favs' ? favorites.includes(v.id) : v.cat === activeFilter);
+                return matchesCat && v.id.toLowerCase().includes(searchQuery);
+            });
+
+            filtered.forEach(item => {
+                const card = document.createElement('div');
+                card.className = `picto-card cat-${item.cat} ${favorites.includes(item.id) ? 'is-fav' : ''}`;
+                card.innerHTML = `<img src="${item.img}" loading="lazy"><span class="picto-label">${item.label}</span>`;
+                
+                let timer;
+                const start = (e) => {
+                    timer = setTimeout(() => {
+                        if ("vibrate" in navigator) navigator.vibrate(60);
+                        card.classList.add('fav-pop');
+                        toggleFavorite(item.id);
+                        timer = null;
+                    }, 800);
+                };
+                const end = (e) => {
+                    if (timer) {
+                        clearTimeout(timer);
+                        currentPhrase.push(item);
+                        updatePhrase();
+                        speak(item.id);
+                    }
+                };
+                card.onmousedown = card.ontouchstart = start;
+                card.onmouseup = card.ontouchend = end;
+                grid.appendChild(card);
+            });
+        }
+
+        function toggleFavorite(id) {
+            favorites = favorites.includes(id) ? favorites.filter(f => f !== id) : [...favorites, id];
+            localStorage.setItem('dotir_favs', JSON.stringify(favorites));
+            renderSAAC();
+        }
+
+        function updatePhrase() {
+            const d = document.getElementById('current-phrase');
+            d.innerHTML = '';
+            currentPhrase.forEach((it, i) => {
+                const img = document.createElement('img');
+                img.src = it.img;
+                img.onclick = () => { currentPhrase.splice(i, 1); updatePhrase(); };
+                d.appendChild(img);
+            });
+        }
+
+        function navigateTo(v) {
+            document.querySelectorAll('.view').forEach(x => x.classList.add('hidden'));
+            document.getElementById(`view-${v}`).classList.remove('hidden');
+            if (v === 'saac') renderSAAC();
+        }
+
         function openSecurity() {
             const now = new Date();
             document.getElementById('hint-date').innerText = `Pista PIN: ${now.getFullYear()}/${now.getMonth()+1}/${now.getDate()}`;
@@ -240,103 +289,28 @@
             } else { alert("PIN Incorrecto"); }
         }
 
-        function navigateTo(v) {
-            document.querySelectorAll('.view').forEach(x => x.classList.add('hidden'));
-            document.getElementById(`view-${v}`).classList.remove('hidden');
-            if (v === 'saac') renderSAAC();
-        }
-
-        // 5. RENDERIZADO Y GESTOS (TOQUE VS LONG PRESS)
-        function handleSearch(val) { searchQuery = val.toLowerCase(); renderSAAC(); }
-        function filterCategory(cat) {
-            activeFilter = cat;
-            document.querySelectorAll('.cat-btn').forEach(b => b.classList.toggle('active', b.getAttribute('onclick').includes(`'${cat}'`)));
-            renderSAAC();
-        }
-
-        function renderSAAC() {
-            const grid = document.getElementById('pictogram-grid');
-            grid.innerHTML = '';
-            let filtered = vocabulary.filter(v => {
-                const matchesCat = (activeFilter === 'all') || (activeFilter === 'favs' ? favorites.includes(v.id) : v.cat === activeFilter);
-                return matchesCat && v.id.toLowerCase().includes(searchQuery);
-            });
-            
-            filtered.forEach(item => {
-                const card = document.createElement('div');
-                card.className = `picto-card cat-${item.cat} ${favorites.includes(item.id) ? 'is-fav' : ''}`;
-                card.innerHTML = `<img src="${item.img}"><span class="picto-label">${item.label}</span>`;
-                
-                let pressTimer;
-                let isLongPress = false;
-
-                const start = () => {
-                    isLongPress = false;
-                    pressTimer = setTimeout(() => {
-                        isLongPress = true;
-                        if ("vibrate" in navigator) navigator.vibrate(50);
-                        card.classList.add('fav-pop');
-                        setTimeout(() => card.classList.remove('fav-pop'), 400);
-                        toggleFavorite(item.id);
-                    }, 800);
-                };
-
-                const cancel = (e) => {
-                    clearTimeout(pressTimer);
-                    if (!isLongPress && e.type !== 'mouseleave') {
-                        currentPhrase.push(item);
-                        updatePhrase();
-                        speak(item.voice);
-                    }
-                };
-
-                card.onmousedown = card.ontouchstart = start;
-                card.onmouseup = card.ontouchend = cancel;
-                card.onmouseleave = () => clearTimeout(pressTimer);
-
-                grid.appendChild(card);
-            });
-        }
-
-        function toggleFavorite(id) {
-            favorites = favorites.includes(id) ? favorites.filter(f => f !== id) : [...favorites, id];
-            localStorage.setItem('dotir_favs', JSON.stringify(favorites));
-            if(activeFilter === 'favs') renderSAAC(); // Re-render solo si estamos en la vista de favs
-            else { // Si estamos en otra vista, solo refrescamos la estrella visualmente
-                renderSAAC();
-            }
-        }
-
-        function updatePhrase() {
-            const d = document.getElementById('current-phrase');
-            d.innerHTML = '';
-            currentPhrase.forEach((it, i) => {
-                const im = document.createElement('img');
-                im.src = it.img;
-                im.onclick = () => { currentPhrase.splice(i, 1); updatePhrase(); };
-                d.appendChild(im);
-            });
-        }
-
-        function speakPhrase() { speak(currentPhrase.map(i => i.voice).join(' ')); }
+        function speakPhrase() { speak(currentPhrase.map(i => i.id).join(' ')); }
         function clearPhrase() { currentPhrase = []; updatePhrase(); }
+        function handleSearch(v) { searchQuery = v.toLowerCase(); renderSAAC(); }
+        function filterCategory(c) { activeFilter = c; renderSAAC(); }
 
-        // 6. ACTUALIZACIONES Y CACHÉ
         async function downloadAllAssets() {
             try {
-                const c = await caches.open('dotir-v1');
+                const c = await caches.open('dotir-v1.2');
                 await c.addAll(['index.html', ...vocabulary.map(v => v.img)]);
-                alert("✅ Archivos guardados para uso sin internet.");
-            } catch (e) { alert("⚠️ Se necesita internet para descargar."); }
+                alert("✅ Archivos listos.");
+            } catch (e) { alert("Error de red."); }
         }
 
         async function refreshApp() {
-            if(confirm("¿Quieres refrescar la app? Esto actualizará fotos y código. Tus favoritos se mantendrán intactos.")) {
+            if(confirm("¿Refrescar app? Mantendrás favoritos.")) {
                 const ks = await caches.keys();
                 await Promise.all(ks.map(k => caches.delete(k)));
                 location.reload(true); 
             }
         }
+
+        window.onload = () => { loadVoices(); renderSAAC(); };
     </script>
 </body>
 </html>
