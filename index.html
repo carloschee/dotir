@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Dótir SAAC - Smart Security</title>
+    <title>Dótir SAAC - Persistencia Total</title>
     <style>
         :root {
             --bg-app: #f0f4f7;
@@ -12,7 +12,7 @@
             --cat-medical: #ef9a9a; --cat-social: #ffccbc; --cat-place: #d1d8e0;
         }
 
-        /* RESET Y ÁREA SEGURA iOS */
+        /* RESET Y ÁREA SEGURA */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         html, body { 
             margin: 0; padding: 0; width: 100%; height: 100%;
@@ -31,7 +31,7 @@
         .view { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
         .hidden { display: none !important; }
 
-        /* MODAL DE SEGURIDAD OPTIMIZADO */
+        /* MODAL SEGURIDAD */
         #security-modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.85); display: flex; align-items: center;
@@ -40,29 +40,26 @@
         .modal-content {
             background: white; padding: 30px; border-radius: 25px;
             text-align: center; width: 85%; max-width: 350px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
         .modal-content input {
             width: 100%; padding: 15px; font-size: 1.8rem; text-align: center;
-            border-radius: 15px; border: 2px solid #ddd; margin: 15px 0;
-            outline: none; background: #f9f9f9;
+            border-radius: 15px; border: 2px solid #ddd; margin: 15px 0; outline: none;
         }
-        #hint-date { font-size: 0.85rem; color: #95a5a6; margin-bottom: 5px; font-weight: 500; }
 
-        /* INTERFAZ TABLERO */
+        /* UI TABLERO */
         #phrase-section { height: 100px; flex-shrink: 0; background: white; margin: 10px; border-radius: var(--radius); display: flex; align-items: center; padding: 0 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); z-index: 10; }
         #category-bar { height: 55px; flex-shrink: 0; display: flex; gap: 8px; overflow-x: auto; padding: 5px 10px; scrollbar-width: none; }
         #category-bar::-webkit-scrollbar { display: none; }
-        #pictogram-grid { flex: 1; overflow-y: auto !important; -webkit-overflow-scrolling: touch; display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; padding: 10px 15px 110px; background: var(--bg-app); }
+        #pictogram-grid { flex: 1; overflow-y: auto !important; -webkit-overflow-scrolling: touch; display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; padding: 10px 15px 120px; background: var(--bg-app); }
 
-        /* NAVEGACIÓN Y BÚSQUEDA STICKY */
+        /* BUSCADOR STICKY */
         #sticky-bottom-nav {
             position: absolute; bottom: 0; left: 0; right: 0;
             background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);
             padding: 12px 15px calc(12px + env(safe-area-inset-bottom));
             display: flex; gap: 10px; border-top: 1px solid #ddd; z-index: 100;
         }
-        #live-search { flex: 1; padding: 12px 20px; border-radius: 30px; border: 2px solid #ced6e0; font-size: 1rem; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05); }
+        #live-search { flex: 1; padding: 12px 20px; border-radius: 30px; border: 2px solid #ced6e0; font-size: 1rem; }
         .nav-circle-btn { width: 48px; height: 48px; border-radius: 50%; border: none; background: #2f3542; color: white; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; }
 
         /* TARJETAS */
@@ -71,7 +68,7 @@
         .picto-label { margin-top: 8px; font-weight: bold; font-size: 0.75rem; text-align: center; color: #2f3542; }
         .is-fav::after { content: '⭐'; position: absolute; top: 8px; right: 8px; font-size: 1.1rem; color: #f1c40f; }
 
-        /* CATEGORÍAS COLORES */
+        /* COLORES */
         .cat-subject { background-color: var(--cat-subject); }
         .cat-action { background-color: var(--cat-action); }
         .cat-noun { background-color: var(--cat-noun); }
@@ -79,16 +76,14 @@
         .cat-social { background-color: var(--cat-social); }
         .cat-place { background-color: var(--cat-place); }
 
-        .cat-btn { padding: 8px 18px; border-radius: 20px; border: 2px solid #ddd; background: white; font-weight: bold; cursor: pointer; white-space: nowrap; font-size: 0.8rem; }
+        .cat-btn { padding: 8px 18px; border-radius: 20px; border: 2px solid #ddd; background: white; font-weight: bold; cursor: pointer; white-space: nowrap; }
         .cat-btn.active { background: #4a90e2; color: white; border-color: #4a90e2; }
 
-        /* BOTONES FRASE */
         #speak-btn { background: #2ecc71; border: none; width: 50px; height: 50px; border-radius: 50%; color: white; font-size: 24px; cursor: pointer; }
         #clear-btn { background: #e74c3c; border: none; width: 50px; height: 50px; border-radius: 50%; color: white; font-size: 24px; cursor: pointer; }
         .phrase-display { flex: 1; display: flex; gap: 8px; overflow-x: auto; align-items: center; height: 100%; }
         .phrase-display img { height: 70px; width: 70px; object-fit: contain; }
 
-        /* MENÚ */
         .menu-item { background: white; padding: 25px; border-radius: 25px; margin: 15px 25px; display: flex; align-items: center; gap: 20px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
     </style>
 </head>
@@ -98,33 +93,34 @@
         <div id="security-modal" class="hidden">
             <div class="modal-content">
                 <h3 style="margin-bottom:5px;">Acceso Restringido</h3>
-                <div id="hint-date"></div> <input type="number" id="pin-input" pattern="[0-9]*" inputmode="numeric" placeholder="Código">
+                <div id="hint-date" style="font-size:0.8rem; color:#999; margin-bottom:10px;"></div>
+                <input type="number" id="pin-input" pattern="[0-9]*" inputmode="numeric" placeholder="PIN">
                 <div style="display:flex; gap:10px;">
-                    <button onclick="closeSecurity()" style="flex:1; padding:12px; border-radius:10px; border:none; background:#eee; font-weight:bold;">Cancelar</button>
-                    <button onclick="verifySecurity()" style="flex:1; padding:12px; border-radius:10px; border:none; background:#2f3542; color:white; font-weight:bold;">Entrar</button>
+                    <button onclick="closeSecurity()" style="flex:1; padding:12px; border-radius:10px; border:none; background:#eee;">Cerrar</button>
+                    <button onclick="verifySecurity()" style="flex:1; padding:12px; border-radius:10px; border:none; background:#2f3542; color:white;">Entrar</button>
                 </div>
             </div>
         </div>
 
         <section id="view-menu" class="view">
             <header style="text-align: center; padding: 60px 20px 30px;">
-                <h1 style="margin:0; font-size:3.2rem; color: #2f3542; letter-spacing: -1px;">Dótir</h1>
-                <p style="color:#747d8c; font-weight: 500;">Comunicador Aumentativo</p>
+                <h1 style="margin:0; font-size:3.2rem; color: #2f3542;">Dótir</h1>
+                <p style="color:#747d8c;">Persistencia Activada</p>
             </header>
             <div class="menu-item" onclick="navigateTo('saac')">
                 <span style="font-size:2.5rem;">💬</span>
-                <div><b style="display:block; font-size: 1.2rem;">Tablero</b><span style="color:#a4b0be;">Comunicación abierta</span></div>
+                <div><b>Tablero</b><br><small>Favoritos guardados</small></div>
             </div>
             <div class="menu-item" onclick="openSecurity()">
                 <span style="font-size:2.5rem;">⚙️</span>
-                <div><b style="display:block; font-size: 1.2rem;">Ajustes</b><span style="color:#a4b0be;">Caché y configuración</span></div>
+                <div><b>Ajustes</b><br><small>Configuración</small></div>
             </div>
         </section>
 
         <section id="view-saac" class="view hidden">
             <header id="phrase-section">
                 <div id="current-phrase" class="phrase-display"></div>
-                <button id="speak-btn" onclick="speakPhrase()" style="margin-right:8px;">🔊</button>
+                <button id="speak-btn" onclick="speakPhrase()">🔊</button>
                 <button id="clear-btn" onclick="clearPhrase()">✖</button>
             </header>
 
@@ -142,24 +138,23 @@
 
             <div id="sticky-bottom-nav">
                 <button class="nav-circle-btn" onclick="navigateTo('menu')">🏠</button>
-                <input type="text" id="live-search" placeholder="Buscar ficha..." oninput="handleSearch(this.value)">
+                <input type="text" id="live-search" placeholder="Buscar..." oninput="handleSearch(this.value)">
                 <div id="status-dot" style="width:12px; height:12px; background:#2ecc71; border-radius:50%; align-self:center;"></div>
             </div>
         </section>
 
         <section id="view-settings" class="view hidden">
             <div style="padding: 20px;">
-                <button onclick="navigateTo('menu')" style="padding:10px 20px; border-radius:15px; border:none; background:#2f3542; color:white; font-weight:bold;">⬅ Volver</button>
-                <h2 style="margin-top:20px;">Ajustes de Sistema</h2>
-                <div style="background:white; padding:20px; border-radius:20px; margin-top:20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
-                    <h4>Modo Sin Conexión</h4>
-                    <p style="font-size:0.8rem; color:#666;">Guarda todas las imágenes en la memoria del dispositivo.</p>
-                    <button onclick="downloadAllAssets()" style="width:100%; padding:15px; background:#4a90e2; color:white; border:none; border-radius:12px; font-weight:bold;">Descargar Todo</button>
-                    <p id="status-msg" style="margin-top:10px; font-size:0.8rem; font-weight: bold; color: #2ecc71;"></p>
+                <button onclick="navigateTo('menu')" style="padding:10px; border-radius:10px; border:none; background:#2f3542; color:white;">⬅ Volver</button>
+                <h2 style="margin-top:20px;">Ajustes</h2>
+                <div style="background:white; padding:20px; border-radius:20px; margin-top:20px;">
+                    <h4>Memoria Offline</h4>
+                    <button onclick="downloadAllAssets()" style="width:100%; padding:15px; background:#4a90e2; color:white; border:none; border-radius:12px;">Descargar Imágenes</button>
+                    <p id="status-msg" style="font-size:0.8rem; margin-top:10px;"></p>
                 </div>
-                <div style="background:white; padding:20px; border-radius:20px; margin-top:20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                <div style="background:white; padding:20px; border-radius:20px; margin-top:20px;">
                     <h4>Mantenimiento</h4>
-                    <button onclick="clearAppData()" style="width:100%; padding:15px; background:#ff7675; color:white; border:none; border-radius:12px; font-weight:bold;">Borrar Datos y Caché</button>
+                    <button onclick="clearAppData()" style="width:100%; padding:15px; background:#ff7675; color:white; border:none; border-radius:12px;">Borrar Favoritos y Caché</button>
                 </div>
             </div>
         </section>
@@ -168,15 +163,22 @@
     <script>
         const rawFiles = ["abeja", "abrazo", "adiós", "ahora", "antes", "autobús", "avión", "ayuda", "bicicleta", "bien", "brazo", "caballo", "cabeza", "cansado", "caracol", "coche", "curita", "después", "dibujar", "diente", "dolor", "enfadado", "escuchar", "escuela", "espalda", "estomago", "farola", "fiebre", "flor", "frutería", "garganta", "gato", "gracias", "hola", "hospital", "jarabe", "kiosco", "lavar", "lluvia", "mal", "mano", "mareo", "mariposa", "miedo", "más", "no quiero", "no", "oler", "oído", "panadería", "papelera", "parque", "paso de cebra", "pastilla", "perro", "pez", "pie", "pierna", "poco", "por favor", "pájaro", "semáforo", "Sol", "solicitar permiso", "suave", "sí", "termómetro", "tocar", "tos", "tren", "triste", "vaca", "vacuna", "ver", "vómito", "yo quiero", "árbol"];
         
-        let favorites = JSON.parse(localStorage.getItem('dotir_favs')) || [];
+        // --- LÓGICA DE PERSISTENCIA REFORZADA ---
+        let favorites = [];
+        try {
+            const saved = localStorage.getItem('dotir_favs');
+            if (saved) {
+                favorites = JSON.parse(saved);
+            }
+        } catch (e) {
+            console.error("Error cargando favoritos de localStorage", e);
+            favorites = [];
+        }
+
         let currentPhrase = [];
         let activeFilter = 'favs';
         let searchQuery = "";
         let selectedVoice = null;
-
-        const vocabulary = rawFiles.map(file => ({
-            id: file, label: file.toUpperCase(), img: `assets/pics/${file}.png`, voice: file, cat: getCategory(file)
-        }));
 
         function getCategory(name) {
             const n = name.toLowerCase();
@@ -188,47 +190,31 @@
             return "noun";
         }
 
-        // --- SEGURIDAD: CÓDIGO DINÁMICO (Día + Mes + Año) ---
-        function openSecurity() { 
+        const vocabulary = rawFiles.map(file => ({
+            id: file, label: file.toUpperCase(), img: `assets/pics/${file}.png`, voice: file, cat: getCategory(file)
+        }));
+
+        // SEGURIDAD
+        function openSecurity() {
             const now = new Date();
-            const y = now.getFullYear();
-            const m = now.getMonth() + 1;
-            const d = now.getDate();
-            
-            // Mostramos la fecha como pista
-            document.getElementById('hint-date').innerText = `Hoy es: ${y} / ${m < 10 ? '0'+m : m} / ${d < 10 ? '0'+d : d}`;
-            
+            document.getElementById('hint-date').innerText = `Hoy es: ${now.getFullYear()}/${now.getMonth()+1}/${now.getDate()}`;
             document.getElementById('security-modal').classList.remove('hidden');
-            document.getElementById('pin-input').focus();
         }
-
-        function closeSecurity() { 
-            document.getElementById('security-modal').classList.add('hidden'); 
-            document.getElementById('pin-input').value = "";
-        }
-
+        function closeSecurity() { document.getElementById('security-modal').classList.add('hidden'); }
         function verifySecurity() {
             const now = new Date();
-            const correctPin = now.getDate() + (now.getMonth() + 1) + now.getFullYear();
-            const inputVal = parseInt(document.getElementById('pin-input').value);
-            
-            if (inputVal === correctPin) {
-                closeSecurity();
-                navigateTo('settings');
-            } else {
-                alert("Código de seguridad incorrecto.");
-                closeSecurity();
-            }
+            const pin = now.getDate() + (now.getMonth() + 1) + now.getFullYear();
+            if (parseInt(document.getElementById('pin-input').value) === pin) {
+                closeSecurity(); navigateTo('settings');
+            } else { alert("Error"); closeSecurity(); }
         }
 
-        // --- TTS ---
+        // TTS
         function loadVoices() {
             const voices = window.speechSynthesis.getVoices();
-            selectedVoice = voices.find(v => v.lang.includes('es') && v.name.includes('Paulina')) || 
-                            voices.find(v => v.lang.includes('es')) || voices[0];
+            selectedVoice = voices.find(v => v.lang.includes('es') && v.name.includes('Paulina')) || voices.find(v => v.lang.includes('es')) || voices[0];
         }
         window.speechSynthesis.onvoiceschanged = loadVoices;
-        loadVoices();
 
         function speak(text) {
             window.speechSynthesis.cancel();
@@ -239,25 +225,18 @@
             window.speechSynthesis.speak(msg);
         }
 
-        // --- NAVEGACIÓN Y RENDER ---
-        function navigateTo(view) {
-            document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
-            document.getElementById(`view-${view}`).classList.remove('hidden');
-            if (view === 'saac') renderSAAC();
+        // RENDER
+        function navigateTo(v) {
+            document.querySelectorAll('.view').forEach(x => x.classList.add('hidden'));
+            document.getElementById(`view-${v}`).classList.remove('hidden');
+            if (v === 'saac') renderSAAC();
         }
 
-        function handleSearch(val) {
-            searchQuery = val.toLowerCase();
-            renderSAAC();
-        }
+        function handleSearch(val) { searchQuery = val.toLowerCase(); renderSAAC(); }
 
         function filterCategory(cat) {
             activeFilter = cat;
-            searchQuery = "";
-            document.getElementById('live-search').value = "";
-            document.querySelectorAll('.cat-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.getAttribute('onclick').includes(`'${cat}'`));
-            });
+            document.querySelectorAll('.cat-btn').forEach(b => b.classList.toggle('active', b.getAttribute('onclick').includes(`'${cat}'`)));
             renderSAAC();
         }
 
@@ -266,8 +245,7 @@
             grid.innerHTML = '';
             let filtered = vocabulary.filter(v => {
                 const matchesCat = (activeFilter === 'all') || (activeFilter === 'favs' ? favorites.includes(v.id) : v.cat === activeFilter);
-                const matchesSearch = v.id.toLowerCase().includes(searchQuery);
-                return matchesCat && matchesSearch;
+                return matchesCat && v.id.toLowerCase().includes(searchQuery);
             });
             
             filtered.forEach(item => {
@@ -278,46 +256,48 @@
                 let t;
                 card.onmousedown = card.ontouchstart = () => t = setTimeout(() => { toggleFavorite(item.id); t = null; }, 800);
                 card.onmouseup = card.ontouchend = card.onmouseleave = () => clearTimeout(t);
-                card.onclick = () => { if(t) { currentPhrase.push(item); updatePhraseDisplay(); speak(item.voice); } };
+                card.onclick = () => { if(t) { currentPhrase.push(item); updatePhrase(); speak(item.voice); } };
                 grid.appendChild(card);
             });
         }
 
         function toggleFavorite(id) {
-            favorites = favorites.includes(id) ? favorites.filter(f => f !== id) : [...favorites, id];
+            if (favorites.includes(id)) {
+                favorites = favorites.filter(f => f !== id);
+            } else {
+                favorites.push(id);
+            }
+            // Guardado inmediato y persistente
             localStorage.setItem('dotir_favs', JSON.stringify(favorites));
             renderSAAC();
         }
 
-        function updatePhraseDisplay() {
+        function updatePhrase() {
             const d = document.getElementById('current-phrase');
             d.innerHTML = '';
             currentPhrase.forEach((it, i) => {
                 const im = document.createElement('img');
                 im.src = it.img;
-                im.onclick = () => { currentPhrase.splice(i, 1); updatePhraseDisplay(); };
+                im.onclick = () => { currentPhrase.splice(i, 1); updatePhrase(); };
                 d.appendChild(im);
             });
         }
 
         function speakPhrase() { speak(currentPhrase.map(i => i.voice).join(' ')); }
-        function clearPhrase() { currentPhrase = []; updatePhraseDisplay(); }
+        function clearPhrase() { currentPhrase = []; updatePhrase(); }
 
         async function downloadAllAssets() {
-            const m = document.getElementById('status-msg');
-            m.innerText = "Descargando...";
-            try {
-                const c = await caches.open('dotir-v1');
-                await c.addAll(['index.html', ...vocabulary.map(v => v.img)]);
-                m.innerText = "✅ Descarga completa.";
-            } catch (e) { m.innerText = "⚠️ Error de red."; }
+            document.getElementById('status-msg').innerText = "Descargando...";
+            const c = await caches.open('dotir-v1');
+            await c.addAll(['index.html', ...vocabulary.map(v => v.img)]);
+            document.getElementById('status-msg').innerText = "✅ Listo.";
         }
 
         async function clearAppData() {
-            if(confirm("¿Seguro que quieres borrar todo? Se perderán favoritos y caché.")) {
+            if(confirm("¿Borrar todo?")) {
+                localStorage.clear();
                 const ks = await caches.keys();
                 await Promise.all(ks.map(k => caches.delete(k)));
-                localStorage.clear();
                 location.reload();
             }
         }
