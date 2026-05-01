@@ -3,13 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Dótir SAAC - v1.3 Lanzamiento</title>
+    <title>Dótir SAAC - v1.4 Colores y Juego</title>
     <style>
         :root {
             --bg-app: #f0f4f7;
             --radius: 18px;
-            --cat-subject: #ffeb3b; --cat-action: #c5e1a5; --cat-noun: #90caf9;
-            --cat-medical: #ef9a9a; --cat-social: #ffccbc; --cat-place: #d1d8e0;
+            /* Colores de Categorías (Sistema Fitzgerard modificado) */
+            --cat-social: #ffccbc; /* Naranja claro: Social/Frases */
+            --cat-medical: #ef9a9a; /* Rojo claro: Salud */
+            --cat-action: #c5e1a5;  /* Verde claro: Verbos/Acciones */
+            --cat-place: #d1d8e0;   /* Gris azulado: Lugares */
+            --cat-noun: #90caf9;    /* Azul claro: Objetos/Sustantivos */
+            --cat-juego: #ce93d8;   /* Púrpura: Lúdico */
+            --cat-favs: #fff59d;    /* Amarillo: Favoritos */
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -27,7 +33,7 @@
         .phrase-display { flex: 1; display: flex; gap: 8px; overflow-x: auto; align-items: center; height: 100%; }
         .phrase-display img { height: 65px; width: 65px; object-fit: contain; }
 
-        .action-btn { border: none; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.1s; }
+        .action-btn { border: none; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; }
         #clear-btn { background: #ff7675; width: 42px; height: 42px; font-size: 18px; }
         #speak-btn { background: #2ecc71; width: 65px; height: 65px; font-size: 30px; box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3); }
         #save-phrase-btn { background: #4a90e2; width: 42px; height: 42px; font-size: 18px; }
@@ -37,12 +43,27 @@
         .cat-btn { padding: 8px 18px; border-radius: 20px; border: 2px solid #ddd; background: white; font-weight: bold; font-size: 0.8rem; white-space: nowrap; cursor: pointer; }
         .cat-btn.active { background: #2f3542; color: white; border-color: #2f3542; }
 
-        /* GRID */
+        /* GRID CON COLORES DINÁMICOS */
         #main-content-area { flex: 1; overflow-y: auto; padding: 10px 15px 100px; }
         #pictogram-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; }
-        .picto-card { position: relative; background: white; border-radius: var(--radius); padding: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; border-bottom: 4px solid rgba(0,0,0,0.1); min-height: 125px; user-select: none; }
+        
+        .picto-card { 
+            position: relative; border-radius: var(--radius); padding: 10px; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            border-bottom: 4px solid rgba(0,0,0,0.1); min-height: 125px; user-select: none;
+            transition: transform 0.1s;
+        }
+        .picto-card:active { transform: scale(0.95); }
         .picto-card img { width: 75%; pointer-events: none; }
         .is-fav::after { content: '⭐'; position: absolute; top: 8px; right: 8px; color: #f1c40f; font-size: 1.1rem; }
+
+        /* Clases de color por categoría */
+        .card-social { background-color: var(--cat-social); }
+        .card-medical { background-color: var(--cat-medical); }
+        .card-action { background-color: var(--cat-action); }
+        .card-place { background-color: var(--cat-place); }
+        .card-noun { background-color: var(--cat-noun); }
+        .card-juego { background-color: var(--cat-juego); }
 
         .saved-phrase-card { background: white; padding: 18px; border-radius: 15px; display: flex; align-items: center; gap: 15px; margin-bottom: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
 
@@ -52,7 +73,7 @@
         .nav-circle-btn { width: 44px; height: 44px; border-radius: 50%; border: none; background: #2f3542; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
 
         /* MODALES */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 5000; backdrop-filter: blur(5px); }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 5000; }
         .modal-box { background: white; padding: 25px; border-radius: 25px; width: 85%; max-width: 350px; text-align: center; }
         .modal-box input { width: 100%; padding: 12px; margin: 15px 0; border-radius: 10px; border: 1px solid #ddd; text-align: center; font-size: 1.1rem; }
     </style>
@@ -87,11 +108,11 @@
     <section id="view-menu" class="view">
         <header style="text-align: center; padding: 60px 20px 30px;">
             <h1 style="margin:0; font-size:3.5rem; color: #2f3542;">Dótir</h1>
-            <p style="color:#747d8c;">v1.3 Lanzamiento</p>
+            <p style="color:#747d8c;">v1.4 Lúdica & Colores</p>
         </header>
         <div style="background:white; padding:30px; border-radius:25px; margin:15px 25px; display:flex; align-items:center; gap:20px; box-shadow:0 4px 15px rgba(0,0,0,0.05); cursor:pointer;" onclick="navigateTo('saac')">
             <span style="font-size:2.5rem;">💬</span>
-            <div><b style="font-size:1.2rem;">Comunicador</b><br><small>Abrir tablero de pictogramas</small></div>
+            <div><b style="font-size:1.2rem;">Comunicador</b><br><small>Tablero con categorías</small></div>
         </div>
         <div style="background:white; padding:20px; border-radius:25px; margin:10px 25px; display:flex; align-items:center; gap:20px; opacity:0.8; cursor:pointer;" onclick="checkPinAccess()">
             <span style="font-size:1.8rem;">⚙️</span>
@@ -109,13 +130,13 @@
 
         <nav id="category-bar">
             <button class="cat-btn active" onclick="setMode('favs')">⭐</button>
+            <button class="cat-btn" onclick="setMode('juego')">🧩 JUEGO</button>
             <button class="cat-btn" onclick="setMode('phrases')">📂 FRASES</button>
             <button class="cat-btn" onclick="setMode('social')">SOCIAL</button>
             <button class="cat-btn" onclick="setMode('medical')">SALUD</button>
             <button class="cat-btn" onclick="setMode('action')">ACCIONES</button>
             <button class="cat-btn" onclick="setMode('noun')">OBJETOS</button>
             <button class="cat-btn" onclick="setMode('place')">LUGARES</button>
-            <button class="cat-btn" onclick="setMode('all')">TODO</button>
         </nav>
 
         <main id="main-content-area">
@@ -125,28 +146,29 @@
 
         <div class="bottom-nav">
             <button class="nav-circle-btn" onclick="navigateTo('menu')">🏠</button>
-            <input type="text" id="live-search" placeholder="Búsqueda global e inteligente..." oninput="handleSearch(this.value)">
+            <input type="text" id="live-search" placeholder="Busca en todo el tablero..." oninput="handleSearch(this.value)">
+            <button class="nav-circle-btn" style="background:#6c5ce7" title="Azar" onclick="playRandom()">🎲</button>
         </div>
     </section>
 
     <section id="view-settings" class="view hidden">
         <header style="padding:20px; display:flex; align-items:center; gap:15px; background:white;">
             <button onclick="navigateTo('menu')" class="nav-circle-btn">🏠</button>
-            <h2 style="margin:0;">Configuración v1.3</h2>
+            <h2 style="margin:0;">Configuración v1.4</h2>
         </header>
         <div style="padding:20px; overflow-y:auto;">
             <div style="background:white; padding:25px; border-radius:25px; margin-bottom:15px; cursor:pointer;" onclick="downloadAssets()">
                 <span style="font-size:2rem;">✈️</span>
                 <div style="margin-top:10px;">
-                    <b>Modo Avión (Descargar Contenido)</b><br>
-                    <small>Guarda las fichas para usar la app sin internet.</small>
+                    <b>Descargar todo (Modo Avión)</b><br>
+                    <small>Usa la app sin conexión a internet.</small>
                 </div>
             </div>
             <div style="background:white; padding:25px; border-radius:25px; cursor:pointer;" onclick="refreshApp()">
                 <span style="font-size:2rem;">🔄</span>
                 <div style="margin-top:10px;">
-                    <b>Refrescar desde Servidor</b><br>
-                    <small>Actualiza la app. <b>Tus favoritos y frases se conservan.</b></small>
+                    <b>Refrescar App</b><br>
+                    <small>Tus favoritos y frases NO se borran.</small>
                 </div>
             </div>
         </div>
@@ -154,7 +176,7 @@
 </div>
 
 <script>
-    const rawFiles = ["abeja", "abrazo", "adiós", "ahora", "antes", "autobús", "avión", "ayuda", "bicicleta", "bien", "brazo", "caballo", "cabeza", "cansado", "caracol", "coche", "curita", "después", "dibujar", "diente", "dolor", "enfadado", "escuchar", "escuela", "espalda", "estomago", "farola", "fiebre", "flor", "frutería", "garganta", "gato", "gracias", "hola", "hospital", "jarabe", "kiosco", "lavar", "lluvia", "mal", "mano", "mareo", "mariposa", "miedo", "más", "no quiero", "no", "oler", "oído", "panadería", "papelera", "parque", "paso de cebra", "pastilla", "perro", "pez", "pie", "pierna", "poco", "por favor", "pájaro", "semáforo", "Sol", "solicitar permiso", "suave", "sí", "termómetro", "tocar", "tos", "tren", "triste", "vaca", "vacuna", "ver", "vómito", "yo quiero", "árbol"];
+    const rawFiles = ["abeja", "abrazo", "adiós", "ahora", "antes", "autobús", "avión", "ayuda", "bicicleta", "bien", "brazo", "caballo", "cabeza", "cansado", "caracol", "coche", "curita", "después", "dibujar", "diente", "dolor", "enfadado", "escuchar", "escuela", "espalda", "estomago", "farola", "fiebre", "flor", "frutería", "garganta", "gato", "gracias", "hola", "hospital", "jarabe", "kiosco", "lavar", "lluvia", "mal", "mano", "mareo", "mariposa", "miedo", "más", "no quiero", "no", "oler", "oído", "panadería", "papelera", "parque", "paso de cebra", "pastilla", "perro", "pez", "pie", "pierna", "poco", "por favor", "pájaro", "semáforo", "Sol", "solicitar permiso", "suave", "sí", "termómetro", "tocar", "tos", "tren", "triste", "vaca", "vacuna", "ver", "vómito", "yo quiero", "árbol", "otra vez", "tú", "yo", "mira", "rápido", "lento", "se acabó", "sorpresa"];
     
     let favorites = JSON.parse(localStorage.getItem('dotir_favs')) || [];
     let savedPhrases = JSON.parse(localStorage.getItem('dotir_phrases')) || [];
@@ -172,7 +194,9 @@
     window.speechSynthesis.onvoiceschanged = loadVoices;
 
     const vocabulary = rawFiles.map(f => ({ id: f, label: f.toUpperCase(), img: `assets/pics/${f}.png`, cat: getCat(f) }));
+    
     function getCat(n) {
+        if (["otra vez", "tú", "yo", "mira", "rápido", "lento", "se acabó", "sorpresa"].includes(n)) return "juego";
         if (["bien", "mal", "hola", "gracias", "ayuda", "sí", "no", "adiós", "por favor", "no quiero", "triste", "enfadado", "cansado", "miedo", "suave"].includes(n)) return "social";
         if (["fiebre", "dolor", "tos", "hospital", "curita", "pastilla", "jarabe", "vacuna", "termómetro", "vómito", "mareo", "garganta", "brazo", "pierna", "estomago", "oído", "pie", "mano", "espalda", "diente", "cabeza"].includes(n)) return "medical";
         if (["dibujar", "lavar", "oler", "tocar", "ver", "escuchar", "solicitar permiso", "abrazo"].includes(n)) return "action";
@@ -197,13 +221,25 @@
         });
         filtered.forEach(item => {
             const card = document.createElement('div');
-            card.className = `picto-card ${favorites.includes(item.id) ? 'is-fav' : ''}`;
-            card.innerHTML = `<img src="${item.img}"><span>${item.label}</span>`;
+            // Aplicamos clase de color según categoría
+            card.className = `picto-card card-${item.cat} ${favorites.includes(item.id) ? 'is-fav' : ''}`;
+            card.innerHTML = `<img src="${item.img}"><span style="font-size:0.75rem; font-weight:bold; margin-top:5px; text-align:center;">${item.label}</span>`;
+            
             let timer, start, long = false;
             card.onmousedown = card.ontouchstart = () => { long = false; start = Date.now(); timer = setTimeout(() => { long = true; toggleFavorite(item.id); }, 800); };
             card.onmouseup = card.ontouchend = () => { clearTimeout(timer); if (!long && (Date.now() - start > 150)) { currentPhrase.push(item); updatePhrase(); speak(item.id); } };
             grid.appendChild(card);
         });
+    }
+
+    // Elige un pictograma al azar para jugar imitando o identificando
+    function playRandom() {
+        const randomIndex = Math.floor(Math.random() * vocabulary.length);
+        const item = vocabulary[randomIndex];
+        speak("¡Busca el siguiente!: " + item.id);
+        searchQuery = item.id;
+        document.getElementById('live-search').value = item.id;
+        renderGrid();
     }
 
     function renderSavedPhrases() {
@@ -230,8 +266,8 @@
     function handleClearClick() { if (currentPhrase.length === 0) return; currentPhrase = []; updatePhrase(); }
     function checkPinAccess() { const n = new Date(); document.getElementById('pin-hint').innerText = `PIN: ${n.getDate() + (n.getMonth() + 1) + n.getFullYear()}`; toggleModal('modal-pin', true); }
     function verifyPin() { const n = new Date(); const p = n.getDate() + (n.getMonth() + 1) + n.getFullYear(); if (parseInt(document.getElementById('input-pin').value) === p) { toggleModal('modal-pin', false); navigateTo('settings'); } else alert("Error"); }
-    async function downloadAssets() { try { const c = await caches.open('dotir-v1-3'); await c.addAll(['index.html', ...vocabulary.map(v => v.img)]); alert("✅ Contenido offline listo."); } catch (e) { alert("⚠️ Error de conexión."); } }
-    async function refreshApp() { if(confirm("¿Refrescar app? Tus datos no se borrarán.")) { const ks = await caches.keys(); await Promise.all(ks.map(k => caches.delete(k))); location.reload(true); } }
+    async function downloadAssets() { try { const c = await caches.open('dotir-v1-4'); await c.addAll(['index.html', ...vocabulary.map(v => v.img)]); alert("✅ Offline activado."); } catch (e) { alert("⚠️ Error de red."); } }
+    async function refreshApp() { if(confirm("¿Refrescar app?")) { const ks = await caches.keys(); await Promise.all(ks.map(k => caches.delete(k))); location.reload(true); } }
 
     window.onload = () => { loadVoices(); renderGrid(); };
 </script>
