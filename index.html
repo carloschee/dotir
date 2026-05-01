@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Dótir SAAC - Precisión Total</title>
+    <title>Dótir SAAC - Haptic UX</title>
     <style>
         :root {
             --bg-app: #f0f4f7;
@@ -30,7 +30,7 @@
         .view { display: flex; flex-direction: column; flex: 1; overflow: hidden; position: relative; }
         .hidden { display: none !important; }
 
-        /* SEGURIDAD */
+        /* MODAL SEGURIDAD */
         #security-modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.85); display: flex; align-items: center;
@@ -38,7 +38,7 @@
         }
         .modal-content { background: white; padding: 30px; border-radius: 25px; text-align: center; width: 85%; max-width: 350px; }
 
-        /* TABLERO */
+        /* UI TABLERO */
         #phrase-section { height: 100px; flex-shrink: 0; background: white; margin: 10px; border-radius: var(--radius); display: flex; align-items: center; padding: 0 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
         #category-bar { height: 55px; flex-shrink: 0; display: flex; gap: 8px; overflow-x: auto; padding: 5px 10px; }
         
@@ -57,17 +57,37 @@
         #live-search { flex: 1; padding: 10px 20px; border-radius: 30px; border: 2px solid #ced6e0; font-size: 1rem; height: 44px; }
         .nav-circle-btn { width: 44px; height: 44px; border-radius: 50%; border: none; background: #2f3542; color: white; display: flex; align-items: center; justify-content: center; }
 
-        /* TARJETAS - SIN USER SELECT PARA EVITAR TEXTO SELECCIONADO */
+        /* TARJETAS CON ANIMACIONES */
         .picto-card { 
             position: relative; background: white; border-radius: var(--radius); 
             padding: 10px; display: flex; flex-direction: column; align-items: center; 
             justify-content: center; border-bottom: 4px solid rgba(0,0,0,0.1); 
             min-height: 125px; user-select: none; -webkit-user-select: none;
+            transition: transform 0.1s ease, opacity 0.1s ease;
         }
+        
+        /* GUIÑO VISUAL AL TOCAR */
+        .picto-card:active {
+            opacity: 0.7;
+            transform: scale(0.95);
+        }
+
+        /* ANIMACIÓN AL ACTIVAR FAVORITO */
+        .fav-pop {
+            animation: favPopAnim 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes favPopAnim {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+            100% { transform: scale(1); }
+        }
+
         .picto-card img { width: 75%; height: auto; pointer-events: none; }
         .picto-label { margin-top: 8px; font-weight: bold; font-size: 0.75rem; text-align: center; color: #2f3542; pointer-events: none; }
         .is-fav::after { content: '⭐'; position: absolute; top: 8px; right: 8px; font-size: 1.1rem; color: #f1c40f; }
 
+        /* COLORES */
         .cat-subject { background-color: var(--cat-subject); }
         .cat-action { background-color: var(--cat-action); }
         .cat-noun { background-color: var(--cat-noun); }
@@ -140,19 +160,15 @@
         </section>
 
         <section id="view-settings" class="view hidden">
-            <div style="padding: 20px; z-index: 500; position: relative;">
+            <div style="padding: 20px;">
                 <button onclick="navigateTo('menu')" style="padding:15px 25px; border-radius:15px; border:none; background:#2f3542; color:white; font-weight:bold;">⬅ Volver</button>
                 <h2 style="margin-top:30px;">Configuración</h2>
-                
                 <div style="background:white; padding:20px; border-radius:20px; margin-top:20px;">
-                    <h4>Actualización</h4>
                     <button onclick="downloadAllAssets()" style="width:100%; padding:20px; background:#4a90e2; color:white; border:none; border-radius:12px; font-weight:bold;">Descargar Todo</button>
                 </div>
-
                 <div style="background:white; padding:20px; border-radius:20px; margin-top:20px;">
-                    <h4>Mantenimiento</h4>
                     <button onclick="refreshApp()" style="width:100%; padding:20px; background:#ff7675; color:white; border:none; border-radius:12px; font-weight:bold;">Refrescar App (Limpia Caché)</button>
-                    <p style="font-size:0.75rem; color:#888; margin-top:8px;">Esto descarga la versión más reciente de la app sin perder tus favoritos.</p>
+                    <p style="font-size:0.75rem; color:#888; margin-top:8px;">Favoritos no se perderán.</p>
                 </div>
             </div>
         </section>
@@ -179,7 +195,6 @@
             id: file, label: file.toUpperCase(), img: `assets/pics/${file}.png`, voice: file, cat: getCategory(file)
         }));
 
-        // --- SEGURIDAD ---
         function openSecurity() {
             const now = new Date();
             document.getElementById('hint-date').innerText = `Pista: ${now.getFullYear()}/${now.getMonth()+1}/${now.getDate()}`;
@@ -197,8 +212,7 @@
         function speak(text) {
             window.speechSynthesis.cancel();
             const msg = new SpeechSynthesisUtterance(text);
-            msg.lang = 'es-ES';
-            msg.rate = 0.9;
+            msg.lang = 'es-ES'; msg.rate = 0.9;
             window.speechSynthesis.speak(msg);
         }
 
@@ -216,7 +230,6 @@
             renderSAAC();
         }
 
-        // --- RENDER CON LÓGICA DE GESTOS REFORZADA ---
         function renderSAAC() {
             const grid = document.getElementById('pictogram-grid');
             grid.innerHTML = '';
@@ -233,27 +246,29 @@
                 let pressTimer;
                 let isLongPress = false;
 
-                // Eventos para diferenciar Toque de Pulsación Larga
-                const start = (e) => {
+                const start = () => {
                     isLongPress = false;
                     pressTimer = setTimeout(() => {
                         isLongPress = true;
+                        // HAPTIC FEEDBACK
+                        if ("vibrate" in navigator) navigator.vibrate(50);
+                        // VISUAL FEEDBACK (POP)
+                        card.classList.add('fav-pop');
+                        setTimeout(() => card.classList.remove('fav-pop'), 400);
+                        
                         toggleFavorite(item.id);
-                    }, 800); // 800ms para marcar favorito
+                    }, 800);
                 };
 
                 const cancel = (e) => {
                     clearTimeout(pressTimer);
-                    // Si NO fue pulsación larga y NO fue cancelado por scroll
                     if (!isLongPress && e.type !== 'mouseleave') {
-                        // Es un toque normal
                         currentPhrase.push(item);
                         updatePhrase();
                         speak(item.voice);
                     }
                 };
 
-                // Desktop + Mobile
                 card.onmousedown = card.ontouchstart = start;
                 card.onmouseup = card.ontouchend = cancel;
                 card.onmouseleave = () => clearTimeout(pressTimer);
@@ -282,22 +297,18 @@
         function speakPhrase() { speak(currentPhrase.map(i => i.voice).join(' ')); }
         function clearPhrase() { currentPhrase = []; updatePhrase(); }
 
-        // --- MANTENIMIENTO ---
         async function downloadAllAssets() {
-            const msg = document.getElementById('status-msg') || { innerText: "" };
             try {
                 const c = await caches.open('dotir-v1');
                 await c.addAll(['index.html', ...vocabulary.map(v => v.img)]);
-                alert("✅ Archivos descargados correctamente.");
-            } catch (e) { alert("⚠️ Error de conexión."); }
+                alert("✅ Todo descargado.");
+            } catch (e) { alert("⚠️ Error de red."); }
         }
 
         async function refreshApp() {
-            if(confirm("¿Quieres refrescar la app? Esto actualizará el código y las imágenes, pero conservará tus favoritos.")) {
-                // Borramos solo el caché de archivos
+            if(confirm("Refrescar app conservando tus favoritos?")) {
                 const ks = await caches.keys();
                 await Promise.all(ks.map(k => caches.delete(k)));
-                // Recargamos la página (esto bajará lo nuevo del servidor)
                 location.reload(true); 
             }
         }
